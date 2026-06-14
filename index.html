@@ -1,0 +1,249 @@
+<!doctype html>
+<!--
+  file: songen_wo_kakeyouka_index_fixed_v20260606_38_spec_wording_cleanup.html
+  based_on: v20260606_37_no_headbutt
+
+  final core rules:
+  - head durability: 3 hits
+  - head broken emoji: 💩
+  - no headbutt / no head projectile
+  - attack is fist-only while at least one arm remains usable
+  - normal mid attack hits only the defender's front arm
+  - if the defender's front arm is broken, mid attack reaches heart unless the defender guards with the remaining arm
+  - the remaining arm does not automatically protect the heart during normal stance
+  - do not describe the normal route as "after both arms break"; the intended route is front arm -> heart
+  - guard: remaining arm can move forward only while guarding
+  - hit target is resolved at impact time
+  - projectile collision is checked every frame
+  - result button: ゲームを終了する returns to this game home
+  - battle labels removed; retire button added; retire submits score like normal result
+  - result share text uses enemy name plus outcome message
+-->
+
+<!-- latest: songen_wo_kakeyouka_index_fixed_v20260606_40_remove_dangling_async / created 2026-06-06 -->
+<!-- songen_wo_kakeyouka_index_fixed_v20260606_07: rebuilt battle view separation, visible 3x3 parts, natural hit endpoint, improved controls -->
+<html lang="ja">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover" />
+  <meta name="format-detection" content="telephone=no" />
+  <title>尊厳を賭けようか</title>
+  <link rel="stylesheet" href="styles.css" />
+
+</head>
+<body>
+  <div id="app" class="app">
+    <section id="homeScreen" class="screen active" aria-label="ホーム画面">
+      <div class="card">
+        <div class="heart-logo">🫀</div>
+        <h1 class="title">尊厳を<br />賭けようか</h1>
+        <p class="subtitle">相手の頭を！心臓を！拳で殴って尊厳破壊！</p>
+        <div class="button-stack">
+          <button id="homeCpuBtn" class="primary">CPU戦</button>
+          <button id="homeLocal2pBtn">ローカル2人対戦</button>
+          <button id="homeOnlineBtn">オンライン対戦β</button>
+          <button id="homeShareBtn">ゲームをシェア</button>
+          <button id="homeRulesBtn">ルール説明</button>
+          <button id="homeLabBtn">他のゲームで遊ぶ</button>
+        </div>
+      </div>
+    </section>
+
+    <div id="rulesModal" class="modal-backdrop" aria-hidden="true">
+      <div class="modal-card" role="dialog" aria-modal="true" aria-labelledby="rulesModalTitle">
+        <h2 id="rulesModalTitle" class="section-title">ルール</h2>
+        <ul class="rule-list">
+          <li>相手の🫀を🤜で殴れば勝利</li>
+          <li>攻撃🤜とガード💪はスタミナを消費する</li>
+          <li>スタミナは一定時間で回復</li>
+          <li>🤜には射程距離がある</li>
+          <li>頭は3回、💪🦵は2回攻撃で壊れる</li>
+          <li>ガードには💪が必要</li>
+          <li>ジャンプには🦵が必要</li>
+        </ul>
+        <div class="button-stack">
+          <button id="rulesCloseBtn" class="primary">閉じる</button>
+        </div>
+      </div>
+    </div>
+
+    <section id="setupScreen" class="screen" aria-label="ゲーム開始前設定">
+      <div class="card">
+        <h2 id="setupModeTitle" class="section-title">試合前の設定</h2>
+        <div class="setup-grid">
+          <label>
+            <div class="section-title">プレイヤー名</div>
+            <input id="playerNameInput" type="text" maxlength="12" autocomplete="nickname" placeholder="名前を入力" />
+          </label>
+
+          <div>
+            <div class="section-title">プレイヤー頭選択</div>
+            <div id="playerHeadGrid" class="head-grid"></div>
+            <p class="note-text">未選択ならランダムです。羽🪽は常に付きます。</p>
+          </div>
+
+          <div>
+            <div id="opponentHeadTitle" class="section-title">CPU頭選択</div>
+            <div id="cpuHeadGrid" class="head-grid"></div>
+          </div>
+
+          <label>
+            <div id="opponentNameTitle" class="section-title">CPU名</div>
+            <input id="cpuNameInput" type="text" maxlength="10" placeholder="空欄ならランダム" />
+          </label>
+
+          <div>
+            <div class="section-title">プレイヤーの位置</div>
+            <div class="radio-row">
+              <label class="choice-card selected"><input type="radio" name="playerSide" value="left" checked /><span>プレイヤー<br>左側</span></label>
+              <label class="choice-card"><input type="radio" name="playerSide" value="right" /><span>プレイヤー<br>右側</span></label>
+            </div>
+          </div>
+        </div>
+        <div class="button-stack">
+          <button id="setupStartBtn" class="primary">戦闘開始</button>
+          <button id="setupBackBtn">ホームへ戻る</button>
+        </div>
+      </div>
+    </section>
+
+    <section id="battleScreen" class="screen battle-screen" aria-label="戦闘画面">
+      <div class="hud">
+        <div class="hud-box"><span class="hud-label">TIME</span><span id="timeValue" class="hud-value">180</span></div>
+        <div class="hud-box"><span class="hud-label">SCORE</span><span id="scoreValue" class="hud-value">0点</span></div>
+      </div>
+      <button id="retireBtn" class="retire-btn" type="button">リタイア</button>
+      <div class="stamina-panel" aria-label="プレイヤースタミナ">
+        <span class="hud-label">プレイヤー STAMINA</span>
+        <span id="staminaValue" class="hud-value">5.0</span>
+        <span id="staminaBar" class="stamina-line">■■■■■</span>
+      </div>
+      <div id="stage" class="stage">
+        <div class="ground"></div>
+        <div id="playerFighter" class="fighter" data-role="プレイヤー">
+          <div id="playerFighterName" class="fighter-name">プレイヤー</div>
+          <div id="playerHeadRow" class="body-grid" aria-label="プレイヤーパーツ配置 1空白 2頭 3羽 4左腕 5心臓 6右腕 7空白 8左足 9右足">
+            <!-- 1=空白 / 2=頭 / 3=🪽 / 4=💪 / 5=🫀 / 6=💪 / 7=空白 / 8=🦵 / 9=🦵 -->
+            <span class="part part-spacer" data-cell="1" aria-hidden="true">　</span><span id="playerHeadPart" class="part head-part" data-cell="2">𓅿</span><span class="part wing-part" data-cell="3">🪽</span>
+            <span id="playerLeftArm" class="part" data-cell="4">💪</span><span id="playerHeart" class="part heart-part" data-cell="5">🫀</span><span id="playerRightArm" class="part" data-cell="6">💪</span>
+            <span class="part part-spacer" data-cell="7" aria-hidden="true">　</span><span id="playerLeftFoot" class="part" data-cell="8">🦵</span><span id="playerRightFoot" class="part" data-cell="9">🦵</span>
+          </div>
+          <div id="playerGuardMark" class="guard-mark">💪</div>
+        </div>
+        <div id="cpuFighter" class="fighter" data-role="CPU">
+          <div id="cpuFighterName" class="fighter-name">CPU</div>
+          <div id="cpuHeadRow" class="body-grid" aria-label="CPUパーツ配置 1空白 2頭 3羽 4左腕 5心臓 6右腕 7空白 8左足 9右足">
+            <!-- 1=空白 / 2=頭 / 3=🪽 / 4=💪 / 5=🫀 / 6=💪 / 7=空白 / 8=🦵 / 9=🦵 -->
+            <span class="part part-spacer" data-cell="1" aria-hidden="true">　</span><span id="cpuHeadPart" class="part head-part" data-cell="2">𓅿</span><span class="part wing-part" data-cell="3">🪽</span>
+            <span id="cpuLeftArm" class="part" data-cell="4">💪</span><span id="cpuHeart" class="part heart-part" data-cell="5">🫀</span><span id="cpuRightArm" class="part" data-cell="6">💪</span>
+            <span class="part part-spacer" data-cell="7" aria-hidden="true">　</span><span id="cpuLeftFoot" class="part" data-cell="8">🦵</span><span id="cpuRightFoot" class="part" data-cell="9">🦵</span>
+          </div>
+          <div id="cpuGuardMark" class="guard-mark">💪</div>
+        </div>
+      </div>
+      <div id="countdown" class="countdown">3</div>
+      <div class="controls" aria-label="操作ボタン">
+        <div class="move-pad">
+          <button id="leftBtn" class="control-btn">←</button>
+          <button id="rightBtn" class="control-btn">→</button>
+          <button id="jumpBtn" class="control-btn" aria-label="ジャンプ">↑</button>
+          <button id="crouchBtn" class="control-btn" aria-label="しゃがみ">↓</button>
+        </div>
+        <div class="action-pad">
+          <button id="attackBtn" class="control-btn action-btn">攻撃A</button>
+          <button id="guardBtn" class="control-btn guard-btn">ガードB</button>
+        </div>
+      </div>
+    </section>
+
+
+    <section id="outcomeScreen" class="screen" aria-label="決着画面">
+      <div class="card outcome-card">
+        <div class="outcome-top">
+          <div class="outcome-finish">終了</div>
+          <div id="outcomeStatus" class="outcome-status">勝利</div>
+          <div id="outcomeMessage" class="outcome-message">尊厳を破壊した</div>
+        </div>
+
+        <div class="outcome-shot" aria-label="決着時の2人">
+          <div class="outcome-duo">
+            <div id="outcomePlayerCard" class="outcome-fighter-card">
+              <div id="outcomePlayerName" class="outcome-name">プレイヤー</div>
+              <div class="body-grid" aria-label="プレイヤーの決着時の姿">
+                <span class="part part-spacer" aria-hidden="true">　</span><span id="outcomePlayerHead" class="part head-part">𓅿</span><span class="part wing-part">🪽</span>
+                <span id="outcomePlayerLeftArm" class="part">💪</span><span class="part heart-part">🫀</span><span id="outcomePlayerRightArm" class="part">💪</span>
+                <span class="part part-spacer" aria-hidden="true">　</span><span id="outcomePlayerLeftFoot" class="part">🦵</span><span id="outcomePlayerRightFoot" class="part">🦵</span>
+              </div>
+            </div>
+
+            <div class="outcome-vs">VS</div>
+
+            <div id="outcomeCpuCard" class="outcome-fighter-card">
+              <div id="outcomeCpuName" class="outcome-name">CPU</div>
+              <div class="body-grid" aria-label="CPUの決着時の姿">
+                <span class="part part-spacer" aria-hidden="true">　</span><span id="outcomeCpuHead" class="part head-part">𓅿</span><span class="part wing-part">🪽</span>
+                <span id="outcomeCpuLeftArm" class="part">💪</span><span class="part heart-part">🫀</span><span id="outcomeCpuRightArm" class="part">💪</span>
+                <span class="part part-spacer" aria-hidden="true">　</span><span id="outcomeCpuLeftFoot" class="part">🦵</span><span id="outcomeCpuRightFoot" class="part">🦵</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div>
+          <div id="outcomeScore" class="outcome-score">スコア：0点</div>
+        </div>
+
+        <div class="outcome-bottom">
+          <button id="outcomeResultBtn" class="primary" type="button">結果を見る</button>
+        </div>
+      </div>
+    </section>
+
+    <section id="resultScreen" class="screen" aria-label="結果画面">
+      <div class="card">
+        <div id="resultMain" class="result-main">結果</div>
+        <div id="resultSub" class="result-sub">尊厳は保たれた</div>
+        <div id="scoreBig" class="score-big">0点</div>
+        <div class="breakdown">
+          <div class="break-row"><span>飛ばした攻撃数</span><strong id="bdAttacks">0</strong></div>
+          <div class="break-row"><span>ガード成功数</span><strong id="bdGuards">0</strong></div>
+          <div class="break-row"><span>壊した相手パーツ数</span><strong id="bdEnemyBroken">0</strong></div>
+          <div class="break-row"><span>壊された自分パーツ数</span><strong id="bdPlayerBroken">0</strong></div>
+          <div class="break-row"><span>経過秒数</span><strong id="bdElapsed">0秒</strong></div>
+        </div>
+        <div id="sendStatus" class="send-status">ランキング送信中...</div>
+        <div class="button-stack">
+          <button id="retryBtn" class="primary">もう一度</button>
+          <button id="resultShareBtn">結果をシェア</button>
+          <button id="resultLabBtn">ゲームを終了する</button>
+        </div>
+      </div>
+    </section>
+
+    <section id="onlineLobbyScreen" class="screen" aria-label="オンライン対戦β">
+      <div class="card">
+        <h2 class="section-title">オンライン対戦β</h2>
+        <p class="note-text">オンライン対戦は準備中のβ機能です。現在は接続テスト用の待ち合わせ画面のみ実装しています。</p>
+        <label>
+          <div class="section-title">共通パス</div>
+          <input id="onlinePassInput" type="password" maxlength="32" autocomplete="off" placeholder="共通パスを入力" />
+        </label>
+        <div id="onlineStatus" class="send-status">共通パスを入力してください</div>
+        <div id="onlineSlotList" class="breakdown" aria-label="対戦枠の状態"></div>
+        <div class="button-stack">
+          <button id="onlineJoinBtn" class="primary">参加する</button>
+          <button id="onlineBackBtn">ホームへ戻る</button>
+        </div>
+      </div>
+    </section>
+
+    <div id="toast" class="toast" role="status" aria-live="polite"></div>
+  </div>
+
+  <script src="scripts/game-01.js"></script>
+  <script src="scripts/game-02.js"></script>
+  <script src="scripts/game-03.js"></script>
+  <script src="scripts/game-04.js"></script>
+
+</body>
+</html>
