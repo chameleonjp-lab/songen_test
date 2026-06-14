@@ -28,8 +28,1025 @@
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover" />
   <meta name="format-detection" content="telephone=no" />
   <title>尊厳を賭けようか</title>
-  <link rel="stylesheet" href="styles.css" />
+  <style>
+    :root {
+      --bg: #101218;
+      --panel: rgba(255,255,255,0.08);
+      --panel-strong: rgba(255,255,255,0.14);
+      --text: #f8f4ec;
+      --muted: #c8c2b6;
+      --line: rgba(255,255,255,0.18);
+      --accent: #f7d66b;
+      --danger: #ff6f6f;
+      --good: #8ff0b1;
+      --shadow: 0 14px 40px rgba(0,0,0,0.35);
+      --safe-bottom: env(safe-area-inset-bottom, 0px);
+      --stage-bottom-space: 184px;
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    }
 
+    * {
+      box-sizing: border-box;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    html,
+    body {
+      width: 100%;
+      height: 100%;
+      min-height: 100dvh;
+      margin: 0;
+      overflow: hidden;
+      background: var(--bg);
+      color: var(--text);
+      touch-action: manipulation;
+      -webkit-user-select: none;
+      user-select: none;
+      -webkit-touch-callout: none;
+      overscroll-behavior: none;
+    }
+
+    body {
+      position: fixed;
+      inset: 0;
+    }
+
+    button,
+    input {
+      font: inherit;
+    }
+
+    button {
+      border: 0;
+      -webkit-user-select: none;
+      user-select: none;
+      -webkit-touch-callout: none;
+      color: var(--text);
+      background: var(--panel-strong);
+      border: 1px solid var(--line);
+      border-radius: 16px;
+      padding: 12px 14px;
+      min-height: 46px;
+      box-shadow: 0 8px 18px rgba(0,0,0,0.18);
+      cursor: pointer;
+      touch-action: manipulation;
+    }
+
+    button:active,
+    button.is-pressed {
+      transform: translateY(1px) scale(0.98);
+      background: rgba(247,214,107,0.22);
+    }
+
+    button.primary {
+      background: linear-gradient(180deg, #f7d66b, #d59b2e);
+      color: #211709;
+      border-color: rgba(255,255,255,0.35);
+      font-weight: 800;
+    }
+
+    button.danger {
+      background: rgba(255, 111, 111, 0.18);
+    }
+
+    button.small {
+      min-height: 36px;
+      padding: 8px 10px;
+      border-radius: 12px;
+      font-size: 13px;
+    }
+
+    input {
+      width: 100%;
+      border: 1px solid var(--line);
+      border-radius: 14px;
+      padding: 12px 14px;
+      color: var(--text);
+      background: rgba(0,0,0,0.18);
+      outline: none;
+      -webkit-user-select: text;
+      user-select: text;
+    }
+
+    .app {
+      width: 100vw;
+      height: 100dvh;
+      overflow: hidden;
+      position: relative;
+      background:
+        radial-gradient(circle at 20% 12%, rgba(247,214,107,0.22), transparent 28%),
+        radial-gradient(circle at 78% 0%, rgba(143,240,177,0.12), transparent 28%),
+        linear-gradient(180deg, #171a23 0%, #101218 62%, #0a0b10 100%);
+    }
+
+    .screen {
+      position: absolute;
+      inset: 0;
+      display: none;
+      overflow-y: auto;
+      overflow-x: hidden;
+      padding: max(18px, env(safe-area-inset-top, 0px)) 16px calc(20px + var(--safe-bottom));
+      -webkit-overflow-scrolling: touch;
+      overscroll-behavior: contain;
+    }
+
+    .screen.active {
+      display: block;
+    }
+
+    .card {
+      width: min(560px, 100%);
+      margin: 0 auto;
+      padding: 18px;
+      border: 1px solid var(--line);
+      border-radius: 24px;
+      background: var(--panel);
+      box-shadow: var(--shadow);
+      backdrop-filter: blur(10px);
+    }
+
+    .title {
+      margin: 10px 0 8px;
+      font-size: clamp(29px, 9vw, 46px);
+      line-height: 1.08;
+      letter-spacing: 0.02em;
+      text-align: center;
+    }
+
+    .subtitle {
+      margin: 0 auto 18px;
+      max-width: 430px;
+      color: var(--muted);
+      font-size: 14px;
+      line-height: 1.7;
+      text-align: center;
+    }
+
+    .heart-logo {
+      text-align: center;
+      font-size: 48px;
+      margin-top: 6px;
+      filter: drop-shadow(0 10px 22px rgba(255, 70, 70, 0.25));
+    }
+
+    .button-stack {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 10px;
+      margin-top: 18px;
+    }
+
+    .section-title {
+      margin: 18px 0 8px;
+      font-size: 16px;
+      font-weight: 800;
+      color: #fff4d0;
+    }
+
+    .rule-text,
+    .note-text {
+      line-height: 1.75;
+      color: var(--muted);
+      font-size: 14px;
+      white-space: pre-line;
+    }
+
+
+    .modal-backdrop {
+      position: fixed;
+      inset: 0;
+      z-index: 40;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      padding: max(18px, env(safe-area-inset-top, 0px)) 16px calc(18px + var(--safe-bottom));
+      background: rgba(3,4,8,0.72);
+      backdrop-filter: blur(8px);
+    }
+
+    .modal-backdrop.active {
+      display: flex;
+    }
+
+    .modal-card {
+      width: min(520px, 100%);
+      max-height: min(82dvh, 620px);
+      overflow-y: auto;
+      padding: 18px;
+      border: 1px solid rgba(255,255,255,0.16);
+      border-radius: 24px;
+      background: rgba(24,27,38,0.96);
+      box-shadow: var(--shadow);
+    }
+
+    .rule-list {
+      margin: 10px 0 0;
+      padding: 0;
+      list-style: none;
+      display: grid;
+      gap: 9px;
+      color: var(--text);
+      font-size: 14px;
+      line-height: 1.65;
+    }
+
+    .rule-list li {
+      padding: 9px 10px;
+      border: 1px solid rgba(255,255,255,0.08);
+      border-radius: 14px;
+      background: rgba(255,255,255,0.045);
+    }
+
+    .setup-grid {
+      display: grid;
+      gap: 14px;
+    }
+
+    .head-grid {
+      display: grid;
+      grid-template-columns: repeat(6, 1fr);
+      gap: 8px;
+      margin-top: 8px;
+    }
+
+    .head-choice {
+      min-height: 44px;
+      padding: 7px 4px;
+      border-radius: 14px;
+      font-size: 22px;
+      line-height: 1;
+    }
+
+    .head-choice.selected {
+      outline: 2px solid var(--accent);
+      background: rgba(247,214,107,0.2);
+    }
+
+    .radio-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+    }
+
+    .choice-card {
+      position: relative;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 66px;
+      border: 1px solid var(--line);
+      border-radius: 18px;
+      padding: 10px 8px;
+      background: rgba(0,0,0,0.18);
+      color: var(--muted);
+      text-align: center;
+      font-weight: 900;
+      line-height: 1.28;
+      box-shadow: inset 0 0 0 1px rgba(255,255,255,0.02);
+    }
+
+    .choice-card input {
+      position: absolute;
+      opacity: 0;
+      pointer-events: none;
+      width: 1px;
+      height: 1px;
+      margin: 0;
+    }
+
+    .choice-card.selected,
+    .choice-card:has(input:checked) {
+      color: #1b1604;
+      border-color: rgba(247,214,107,0.9);
+      background: linear-gradient(180deg, #ffe590, #f7c948);
+      box-shadow: 0 10px 22px rgba(247,214,107,0.18);
+    }
+
+    .choice-card span {
+      display: block;
+    }
+
+    .battle-screen {
+      padding: 0;
+      overflow: hidden;
+    }
+
+    .hud {
+      position: absolute;
+      z-index: 30;
+      top: max(8px, env(safe-area-inset-top, 0px));
+      left: 8px;
+      right: 8px;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 6px;
+      pointer-events: none;
+    }
+
+    .stamina-panel {
+      position: absolute;
+      z-index: 31;
+      top: calc(max(8px, env(safe-area-inset-top, 0px)) + 82px);
+      left: 50%;
+      transform: translateX(-50%);
+      width: min(210px, calc(100vw - 32px));
+      padding: 8px 12px;
+      border-radius: 18px;
+      background: rgba(0,0,0,0.58);
+      border: 1px solid rgba(247,214,107,0.42);
+      box-shadow: 0 10px 28px rgba(0,0,0,0.34);
+      text-align: center;
+      pointer-events: none;
+    }
+
+    .stamina-panel .hud-label {
+      font-size: 10px;
+      color: #fff4d0;
+    }
+
+    .stamina-panel .hud-value {
+      font-size: clamp(20px, 5.6vw, 28px);
+      color: #ffffff;
+      line-height: 1.05;
+    }
+
+    .battle-label {
+      display: none;
+    }
+
+    .retire-btn {
+      position: absolute;
+      z-index: 45;
+      top: max(10px, env(safe-area-inset-top, 0px));
+      right: 10px;
+      min-height: 34px;
+      padding: 7px 10px;
+      border-radius: 999px;
+      font-size: 12px;
+      font-weight: 900;
+      color: #ffe7e7;
+      background: rgba(255, 111, 111, 0.18);
+      border: 1px solid rgba(255, 111, 111, 0.42);
+      box-shadow: 0 8px 18px rgba(0,0,0,0.24);
+      touch-action: none;
+    }
+
+    .hud-box {
+      border: 1px solid var(--line);
+      border-radius: 14px;
+      background: rgba(0,0,0,0.42);
+      padding: 7px 8px;
+      min-width: 0;
+      box-shadow: 0 8px 20px rgba(0,0,0,0.24);
+    }
+
+    .hud-label {
+      display: block;
+      color: var(--muted);
+      font-size: 10px;
+      letter-spacing: 0.08em;
+    }
+
+    .hud-value {
+      display: block;
+      font-size: clamp(15px, 4vw, 20px);
+      font-weight: 800;
+      white-space: nowrap;
+    }
+
+    .stamina-line {
+      display: block;
+      font-size: 12px;
+      letter-spacing: 1px;
+      color: var(--accent);
+      white-space: nowrap;
+    }
+
+    .stage {
+      position: absolute;
+      inset: 0 0 var(--stage-bottom-space) 0;
+      overflow: hidden;
+      border-bottom: 1px solid rgba(255,255,255,0.1);
+      background:
+        linear-gradient(180deg, rgba(255,255,255,0.015) 0%, rgba(0,0,0,0.12) 58%, rgba(0,0,0,0.35) 100%),
+        radial-gradient(ellipse at 50% 86%, rgba(247,214,107,0.10), transparent 44%),
+        repeating-linear-gradient(90deg, rgba(255,255,255,0.035) 0 1px, transparent 1px 42px);
+    }
+
+    .ground {
+      position: absolute;
+      left: 8px;
+      right: 8px;
+      bottom: 26px;
+      height: 3px;
+      border-radius: 999px;
+      background: linear-gradient(90deg, transparent, rgba(247,214,107,0.56), transparent);
+      box-shadow: 0 10px 26px rgba(0,0,0,0.35);
+    }
+
+    .fighter {
+      position: absolute;
+      width: 132px;
+      height: 150px;
+      transform: translate(-50%, -50%);
+      text-align: center;
+      transition: filter 0.12s linear;
+      will-change: transform, left, top;
+      pointer-events: none;
+    }
+
+    .fighter::after {
+      content: none;
+      display: none;
+    }
+
+    .fighter.hit-flash {
+      filter: drop-shadow(0 0 10px var(--danger));
+    }
+
+    .fighter-name {
+      max-width: 96px;
+      margin: 0 auto 4px;
+      padding: 3px 7px;
+      border-radius: 999px;
+      background: rgba(0,0,0,0.44);
+      color: #fff9e4;
+      font-size: 11px;
+      line-height: 1.2;
+      overflow: hidden;
+      white-space: nowrap;
+      text-overflow: ellipsis;
+    }
+
+    .body-grid {
+      display: grid;
+      grid-template-columns: 38px 38px 38px;
+      grid-template-rows: 38px 38px 38px;
+      gap: 0;
+      justify-content: center;
+      align-items: center;
+      font-size: 32px;
+      line-height: 1;
+      width: max-content;
+      margin: 0 auto;
+      padding: 3px 0 0;
+      border-radius: 0;
+      background: transparent;
+      border: 0;
+      filter: drop-shadow(0 8px 12px rgba(0,0,0,0.45));
+      font-family: "Apple Color Emoji", "Segoe UI Emoji", "Noto Color Emoji", system-ui, sans-serif;
+    }
+
+    .part {
+      width: 38px;
+      height: 38px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 10px;
+      transition: opacity 0.12s ease, filter 0.12s ease, transform 0.12s ease, background 0.12s ease;
+    }
+
+    .part-spacer {
+      opacity: 0;
+      user-select: none;
+    }
+
+    .body-grid.head-attack .head-part {
+      transform: translateX(var(--head-push, 0px));
+    }
+
+    .head-part {
+      transition: transform 0.1s ease-out;
+    }
+
+    .part.empty {
+      opacity: 0;
+      background: transparent;
+    }
+
+    .part.broken-head {
+      opacity: 1;
+      filter: none;
+      background: transparent;
+    }
+
+    .part.front-foot {
+      transform: translateY(-2px) scale(1.08);
+      filter: drop-shadow(0 0 7px rgba(247,214,107,0.26));
+    }
+
+    .part.guard-arm {
+      transform: translateY(-1px) scale(1.1);
+      filter: drop-shadow(0 0 10px rgba(247,214,107,0.75));
+    }
+
+    .heart-part {
+      filter: drop-shadow(0 0 7px rgba(255, 85, 85, 0.36));
+    }
+
+    .guard-mark {
+      position: absolute;
+      top: 58px;
+      width: 34px;
+      height: 34px;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      border-radius: 999px;
+      background: rgba(247,214,107,0.16);
+      border: 1px solid rgba(247,214,107,0.55);
+      font-size: 25px;
+      filter: drop-shadow(0 0 10px rgba(247,214,107,0.45));
+    }
+
+    .guard-mark.active {
+      display: none;
+    }
+
+    .fighter.crouching .body-grid {
+      transform: translateY(18px) scaleY(0.92);
+    }
+
+    .fighter.jumping .body-grid {
+      transform: translateY(0);
+    }
+
+    .projectile {
+      position: absolute;
+      z-index: 20;
+      width: 36px;
+      height: 36px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transform: translate(-50%, -50%);
+      font-size: 28px;
+      filter: drop-shadow(0 7px 12px rgba(0,0,0,0.55));
+      will-change: left, top;
+      pointer-events: none;
+    }
+
+    .float-fx {
+      position: absolute;
+      z-index: 25;
+      transform: translate(-50%, -50%);
+      font-size: 26px;
+      animation: floatFx 0.58s ease-out forwards;
+      pointer-events: none;
+      filter: drop-shadow(0 8px 14px rgba(0,0,0,0.4));
+    }
+
+    @keyframes floatFx {
+      from { opacity: 1; transform: translate(-50%, -50%) scale(1); }
+      to { opacity: 0; transform: translate(-50%, -96%) scale(1.25); }
+    }
+
+    .countdown {
+      position: absolute;
+      z-index: 40;
+      inset: 0 0 var(--stage-bottom-space) 0;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      background: rgba(0,0,0,0.28);
+      font-size: clamp(54px, 18vw, 92px);
+      font-weight: 900;
+      color: #fff4d0;
+      text-shadow: 0 12px 32px rgba(0,0,0,0.58);
+      pointer-events: none;
+    }
+
+    .countdown.active {
+      display: flex;
+    }
+
+    .controls {
+      position: absolute;
+      z-index: 35;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      min-height: calc(var(--stage-bottom-space) + var(--safe-bottom));
+      padding: 16px 14px calc(14px + var(--safe-bottom));
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      align-items: center;
+      gap: 10px;
+      background:
+        linear-gradient(180deg, rgba(26,28,38,0.94), rgba(9,10,14,0.98));
+      border-top: 1px solid rgba(255,255,255,0.10);
+      box-shadow: 0 -10px 32px rgba(0,0,0,0.34);
+    }
+
+    .move-pad {
+      width: min(43vw, 158px);
+      height: 138px;
+      justify-self: start;
+      display: grid;
+      grid-template-columns: 1fr 1fr 1fr;
+      grid-template-rows: 1fr 1fr 1fr;
+      grid-template-areas:
+        ". jump ."
+        "left center right"
+        ". crouch .";
+      gap: 2px;
+      position: relative;
+      padding: 2px;
+    }
+
+    .move-pad::before {
+      content: "";
+      position: absolute;
+      left: 50%;
+      top: 50%;
+      width: 98px;
+      height: 98px;
+      transform: translate(-50%, -50%);
+      border-radius: 24px;
+      background: rgba(0,0,0,0.22);
+      border: 1px solid rgba(255,255,255,0.08);
+      box-shadow: inset 0 3px 12px rgba(0,0,0,0.42);
+    }
+
+    .move-pad::after {
+      content: "";
+      grid-area: center;
+      z-index: 0;
+      border-radius: 12px;
+      background: rgba(255,255,255,0.06);
+    }
+
+    #leftBtn { grid-area: left; }
+    #rightBtn { grid-area: right; }
+    #jumpBtn { grid-area: jump; }
+    #crouchBtn { grid-area: crouch; }
+
+    .action-pad {
+      justify-self: end;
+      width: min(44vw, 176px);
+      min-height: 138px;
+      display: flex;
+      align-items: center;
+      justify-content: flex-end;
+      gap: 14px;
+    }
+
+    .control-btn {
+      position: relative;
+      z-index: 1;
+      min-height: 40px;
+      padding: 6px;
+      font-weight: 900;
+      font-size: clamp(12px, 3.5vw, 16px);
+      border-radius: 16px;
+      background: rgba(255,255,255,0.12);
+      touch-action: none;
+    }
+
+    .move-pad .control-btn {
+      width: 100%;
+      height: 100%;
+      padding: 0;
+      font-size: 22px;
+      line-height: 1;
+      box-shadow: 0 7px 0 rgba(0,0,0,0.28), 0 10px 18px rgba(0,0,0,0.25);
+    }
+
+    .action-pad .control-btn {
+      width: clamp(64px, 18vw, 78px);
+      height: clamp(64px, 18vw, 78px);
+      border-radius: 999px;
+      box-shadow: 0 9px 0 rgba(0,0,0,0.34), 0 14px 22px rgba(0,0,0,0.30);
+      letter-spacing: -0.03em;
+    }
+
+    .action-btn {
+      order: 2;
+      background: radial-gradient(circle at 35% 28%, rgba(255,255,255,0.2), rgba(247,214,107,0.22));
+      color: #fff4d0;
+    }
+
+    .guard-btn {
+      order: 1;
+      margin-top: 32px;
+      background: radial-gradient(circle at 35% 28%, rgba(255,255,255,0.18), rgba(143,240,177,0.2));
+      color: #dfffe9;
+    }
+
+    .result-main {
+      font-size: clamp(26px, 8vw, 42px);
+      font-weight: 900;
+      text-align: center;
+      margin: 8px 0 4px;
+    }
+
+    .result-sub {
+      color: #fff4d0;
+      text-align: center;
+      font-size: 18px;
+      margin-bottom: 14px;
+    }
+
+    .score-big {
+      text-align: center;
+      font-size: clamp(34px, 11vw, 58px);
+      font-weight: 900;
+      color: var(--accent);
+      margin: 8px 0 18px;
+    }
+
+    .breakdown {
+      display: grid;
+      gap: 8px;
+      margin: 12px 0;
+    }
+
+    .break-row {
+      display: flex;
+      justify-content: space-between;
+      gap: 10px;
+      border-bottom: 1px solid rgba(255,255,255,0.1);
+      padding: 8px 0;
+      color: var(--muted);
+      font-size: 14px;
+    }
+
+    .break-row strong {
+      color: var(--text);
+      white-space: nowrap;
+    }
+
+    .send-status {
+      margin: 14px 0;
+      padding: 10px 12px;
+      border: 1px solid var(--line);
+      border-radius: 16px;
+      background: rgba(0,0,0,0.2);
+      color: var(--muted);
+      text-align: center;
+      font-size: 14px;
+    }
+
+    .send-status.ok { color: var(--good); }
+    .send-status.ng { color: var(--danger); }
+
+    .toast {
+      position: absolute;
+      z-index: 100;
+      left: 50%;
+      bottom: calc(18px + var(--safe-bottom));
+      transform: translateX(-50%);
+      width: min(92vw, 420px);
+      padding: 12px 14px;
+      border: 1px solid var(--line);
+      border-radius: 16px;
+      background: rgba(0,0,0,0.78);
+      color: var(--text);
+      text-align: center;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.18s ease;
+    }
+
+    .toast.active { opacity: 1; }
+
+    .hidden { display: none !important; }
+
+    @media (max-width: 380px) {
+      :root { --stage-bottom-space: 170px; }
+      .card { padding: 14px; border-radius: 20px; }
+      .head-grid { grid-template-columns: repeat(6, 1fr); gap: 6px; }
+      .head-choice { min-height: 38px; font-size: 20px; border-radius: 12px; }
+      .hud { grid-template-columns: 0.75fr 1fr 1.15fr; gap: 5px; }
+      .hud-box { padding: 6px 6px; border-radius: 12px; }
+      .fighter { width: 112px; height: 132px; }
+      .body-grid { grid-template-columns: 32px 32px 32px; grid-template-rows: 32px 32px 32px; font-size: 28px; padding: 3px 0 0; }
+      .part { width: 32px; height: 32px; }
+      .controls { gap: 6px; padding-left: 8px; padding-right: 8px; }
+      .move-pad { height: 124px; }
+      .action-pad { min-height: 124px; gap: 9px; }
+      .action-pad .control-btn { width: 58px; height: 58px; }
+      .guard-btn { margin-top: 26px; }
+    }
+  
+    .control-btn,
+    .retire-btn {
+      touch-action: none;
+    }
+
+    #homeScreen button,
+    #setupScreen button,
+    #resultScreen button,
+    .modal-card button {
+      touch-action: manipulation;
+    }
+
+
+    html,
+    body,
+    .app,
+    .battle-screen,
+    .stage,
+    .controls {
+      overscroll-behavior: none;
+      -webkit-user-select: none;
+      user-select: none;
+      -webkit-touch-callout: none;
+    }
+
+    body.playing-lock {
+      position: fixed;
+      width: 100%;
+      overflow: hidden;
+      touch-action: none;
+    }
+
+    body.playing-lock #battleScreen,
+    body.playing-lock .stage,
+    body.playing-lock .controls {
+      touch-action: none;
+    }
+
+    body.playing-lock .control-btn,
+    body.playing-lock .retire-btn {
+      touch-action: none;
+    }
+
+
+    .outcome-card {
+      min-height: calc(100dvh - 34px);
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      gap: 12px;
+      padding: 18px 14px 14px;
+      overflow: hidden;
+    }
+
+    .outcome-top {
+      text-align: center;
+    }
+
+    .outcome-finish {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      padding: 5px 12px;
+      border-radius: 999px;
+      border: 1px solid rgba(247,214,107,0.55);
+      background: rgba(247,214,107,0.15);
+      color: #fff7d8;
+      font-size: 0.86rem;
+      font-weight: 900;
+      letter-spacing: 0.08em;
+      margin-bottom: 8px;
+    }
+
+    .outcome-status {
+      font-size: clamp(2.1rem, 11vw, 3.8rem);
+      font-weight: 1000;
+      line-height: 1;
+      color: var(--accent);
+      text-shadow: 0 8px 22px rgba(0,0,0,0.45);
+      margin-bottom: 8px;
+    }
+
+    .outcome-message {
+      color: var(--text);
+      font-weight: 900;
+      line-height: 1.55;
+      font-size: clamp(0.98rem, 4vw, 1.1rem);
+    }
+
+    .outcome-shot {
+      flex: 1;
+      min-height: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border: 1px solid rgba(255,255,255,0.18);
+      border-radius: 24px;
+      background:
+        radial-gradient(circle at 50% 20%, rgba(247,214,107,0.16), transparent 42%),
+        linear-gradient(180deg, rgba(255,255,255,0.08), rgba(255,255,255,0.035));
+      box-shadow: inset 0 0 28px rgba(0,0,0,0.24);
+      padding: 12px 8px;
+      overflow: hidden;
+    }
+
+    .outcome-duo {
+      width: 100%;
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr);
+      align-items: end;
+      justify-items: center;
+      gap: 4px;
+    }
+
+    .outcome-vs {
+      align-self: center;
+      color: rgba(255,255,255,0.62);
+      font-weight: 1000;
+      font-size: clamp(0.86rem, 3.8vw, 1.1rem);
+      transform: translateY(8px);
+    }
+
+    .outcome-fighter-card {
+      width: min(42vw, 150px);
+      display: grid;
+      justify-items: center;
+      gap: 7px;
+      padding: 10px 4px 8px;
+      border-radius: 18px;
+      border: 1px solid rgba(255,255,255,0.12);
+      background: rgba(0,0,0,0.14);
+    }
+
+    .outcome-fighter-card.winner {
+      border-color: rgba(143,240,177,0.6);
+      box-shadow: 0 0 20px rgba(143,240,177,0.16);
+    }
+
+    .outcome-fighter-card.loser {
+      border-color: rgba(255,111,111,0.45);
+      filter: saturate(0.92);
+    }
+
+    .outcome-name {
+      max-width: 132px;
+      padding: 4px 9px;
+      border-radius: 999px;
+      background: rgba(0,0,0,0.58);
+      color: #fff9e4;
+      font-size: 0.8rem;
+      line-height: 1.2;
+      font-weight: 900;
+      overflow: hidden;
+      white-space: nowrap;
+      text-overflow: ellipsis;
+    }
+
+    .outcome-fighter-card .body-grid {
+      margin: 0;
+      transform: none !important;
+      filter: drop-shadow(0 10px 14px rgba(0,0,0,0.5));
+    }
+
+    .outcome-score {
+      text-align: center;
+      font-size: 1.15rem;
+      font-weight: 1000;
+      color: #fff7d8;
+      margin-top: 2px;
+    }
+
+    .outcome-bottom {
+      display: grid;
+      gap: 8px;
+      padding-bottom: var(--safe-bottom);
+    }
+
+    .outcome-bottom .primary {
+      min-height: 54px;
+      font-size: 1.04rem;
+    }
+
+    @media (max-height: 700px) {
+      .outcome-card {
+        padding: 12px 12px 10px;
+        gap: 8px;
+      }
+
+      .outcome-status {
+        font-size: clamp(1.75rem, 9vw, 3rem);
+      }
+
+      .outcome-message {
+        font-size: 0.9rem;
+        line-height: 1.35;
+      }
+
+      .outcome-shot {
+        padding: 8px 6px;
+      }
+
+      .outcome-fighter-card {
+        gap: 5px;
+        padding: 8px 2px 6px;
+      }
+    }
+
+
+    .outcome-fighter-card.posture-crouch .body-grid {
+      transform: translateY(14px) scaleY(0.94) !important;
+    }
+
+    .outcome-fighter-card.posture-jump .body-grid {
+      transform: translateY(-22px) !important;
+    }
+
+</style>
 </head>
 <body>
   <div id="app" class="app">
@@ -240,16 +1257,2180 @@
     <div id="toast" class="toast" role="status" aria-live="polite"></div>
   </div>
 
-  <script src="scripts/game-01.js"></script>
-  <script src="scripts/game-02.js"></script>
-  <script src="scripts/game-03.js"></script>
-  <script src="scripts/game-04.js"></script>
-  <script src="scripts/game-05.js"></script>
-  <script src="scripts/game-06.js"></script>
-  <script src="scripts/game-07.js"></script>
-  <script src="scripts/game-08.js"></script>
-  <script src="scripts/game-09.js"></script>
-  <script src="scripts/game-10.js"></script>
+  <script>
+"use strict";
 
+    /******************************************************************
+     * Supabase設定
+     * ここを公開前に差し替えてください。
+     * Publishable key が未設定でも、ゲーム本体はそのまま遊べます。
+     ******************************************************************/
+    const SUPABASE_URL = "https://mlpnjgezrnhdxsxolyzj.supabase.co";
+    const SUPABASE_PUBLISHABLE_KEY = "sb_publishable_drzcy0v97knU6FgjqSgBHw_0A9XPdFM";
+
+    const GAME = Object.freeze({
+      title: "尊厳を賭けようか",
+      slug: "songen_wo_kakeyouka",
+      url: "https://codeberg.org/chameleonjp/songen_test",
+      labUrl: "https://chameleonjp.codeberg.page/chameleonjp_lab/",
+      durationSec: 180,
+      version: "songen_test_online_roadmap_1_5_v20260615"
+    });
+
+    const HEADS = ["𓃾", "𓃿", "𓄀", "𓄁", "𓄃", "𓄇", "𓅿", "𓆀", "𓆁", "🌕", "🌝", "🔵", "😺", "🐶", "🐯", "🦊", "🐹", "🐻"];
+    const CPU_NAMES = ["徘徊者", "リスナー", "配信者", "枠主", "荒らし", "ROM専", "コメ専", "コメ職人", "ガヤ", "モデレーター", "オーナー"];
+
+    const LIMITS = Object.freeze({
+      fistRange: 168,
+hitWidth: 46,
+      minGap: 100,
+      fighterBaseY: 0.88,
+      fighterGroundMargin: 78,
+      moveSpeed: 112,
+      jumpMs: 800,
+      attackCooldownMs: 650,
+      hitStunMs: 360,
+      guardMs: 500,
+      staminaMax: 5,
+      staminaRegenMs: 3000
+    });
+
+    const PART_MAX = Object.freeze({
+      leftArm: 2,
+      rightArm: 2,
+      leftFoot: 2,
+      rightFoot: 2,
+      head: 3
+    });
+
+    const RESULT_TEXT = Object.freeze({
+      win: { label: "勝利" },
+      loss: { label: "敗北" },
+      retire: { label: "リタイア" },
+      draw: { label: "引き分け" }
+    });
+
+    const BATTLE_MODE = Object.freeze({
+      cpu: "cpu",
+      local2p: "local2p"
+    });
+
+    const NETPLAY = Object.freeze({
+      fixedFps: 60,
+      fixedDtMs: 1000 / 60,
+      fixedDtSec: 1 / 60,
+      maxTicksPerFrame: 5
+    });
+
+    const ONLINE_LIMITS = Object.freeze({
+      maxSlots: 3,
+      playersPerSlot: 2
+    });
+
+    function makeOutcomePhrase(outcome, cpuName, playerName) {
+      const enemy = sanitizeName(cpuName, "CPU", 10);
+      const self = sanitizeName(playerName, "プレイヤー", 12);
+      if (outcome === "win") return `${enemy}の尊厳を破壊した`;
+      if (outcome === "loss") return `${enemy}に${self}の尊厳を破壊された`;
+      if (outcome === "retire") return `${enemy}に${self}の尊厳を差し出した`;
+      return `${enemy}との尊厳は保たれた`;
+    }
+
+    const $ = (id) => document.getElementById(id);
+
+    const dom = {
+      screens: {
+        home: $("homeScreen"),
+        setup: $("setupScreen"),
+        battle: $("battleScreen"),
+        outcome: $("outcomeScreen"),
+        result: $("resultScreen"),
+        onlineLobby: $("onlineLobbyScreen")
+      },
+      stage: $("stage"),
+      countdown: $("countdown"),
+      toast: $("toast"),
+      rulesModal: $("rulesModal"),
+      playerNameInput: $("playerNameInput"),
+      cpuNameInput: $("cpuNameInput"),
+      setupModeTitle: $("setupModeTitle"),
+      opponentHeadTitle: $("opponentHeadTitle"),
+      opponentNameTitle: $("opponentNameTitle"),
+      playerHeadGrid: $("playerHeadGrid"),
+      cpuHeadGrid: $("cpuHeadGrid"),
+      onlinePassInput: $("onlinePassInput"),
+      onlineStatus: $("onlineStatus"),
+      onlineSlotList: $("onlineSlotList"),
+      timeValue: $("timeValue"),
+      scoreValue: $("scoreValue"),
+      staminaValue: $("staminaValue"),
+      staminaBar: $("staminaBar"),
+      outcomeStatus: $("outcomeStatus"),
+      outcomeMessage: $("outcomeMessage"),
+      outcomeScore: $("outcomeScore"),
+      outcomeCards: {
+        player: $("outcomePlayerCard"),
+        cpu: $("outcomeCpuCard")
+      },
+      outcomeFighters: {
+        player: {
+          name: $("outcomePlayerName"), head: $("outcomePlayerHead"),
+          leftArm: $("outcomePlayerLeftArm"), rightArm: $("outcomePlayerRightArm"),
+          leftFoot: $("outcomePlayerLeftFoot"), rightFoot: $("outcomePlayerRightFoot")
+        },
+        cpu: {
+          name: $("outcomeCpuName"), head: $("outcomeCpuHead"),
+          leftArm: $("outcomeCpuLeftArm"), rightArm: $("outcomeCpuRightArm"),
+          leftFoot: $("outcomeCpuLeftFoot"), rightFoot: $("outcomeCpuRightFoot")
+        }
+      },
+      resultMain: $("resultMain"),
+      resultSub: $("resultSub"),
+      scoreBig: $("scoreBig"),
+      bdAttacks: $("bdAttacks"),
+      bdGuards: $("bdGuards"),
+      bdEnemyBroken: $("bdEnemyBroken"),
+      bdPlayerBroken: $("bdPlayerBroken"),
+      bdElapsed: $("bdElapsed"),
+      sendStatus: $("sendStatus"),
+      fighters: {
+        player: {
+          root: $("playerFighter"), name: $("playerFighterName"), headRow: $("playerHeadRow"), head: $("playerHeadPart"),
+          leftArm: $("playerLeftArm"), rightArm: $("playerRightArm"), leftFoot: $("playerLeftFoot"), rightFoot: $("playerRightFoot"), guard: $("playerGuardMark")
+        },
+        cpu: {
+          root: $("cpuFighter"), name: $("cpuFighterName"), headRow: $("cpuHeadRow"), head: $("cpuHeadPart"),
+          leftArm: $("cpuLeftArm"), rightArm: $("cpuRightArm"), leftFoot: $("cpuLeftFoot"), rightFoot: $("cpuRightFoot"), guard: $("cpuGuardMark")
+        }
+      },
+      buttons: {
+        homeCpu: $("homeCpuBtn"), homeLocal2p: $("homeLocal2pBtn"), homeOnline: $("homeOnlineBtn"),
+        homeShare: $("homeShareBtn"), homeRules: $("homeRulesBtn"), homeLab: $("homeLabBtn"),
+        rulesClose: $("rulesCloseBtn"),
+        setupStart: $("setupStartBtn"), setupBack: $("setupBackBtn"),
+        retire: $("retireBtn"),
+        outcomeResult: $("outcomeResultBtn"),
+        retry: $("retryBtn"), resultShare: $("resultShareBtn"), resultLab: $("resultLabBtn"),
+        onlineJoin: $("onlineJoinBtn"), onlineBack: $("onlineBackBtn"),
+        left: $("leftBtn"), right: $("rightBtn"), jump: $("jumpBtn"), crouch: $("crouchBtn"), attack: $("attackBtn"), guard: $("guardBtn")
+      }
+    };
+
+    let selectedPlayerHead = "";
+    let selectedCpuHead = "";
+    let lastSettings = null;
+    let lastResult = null;
+    let toastTimer = null;
+
+    const state = {
+      running: false,
+      countdown: false,
+      ended: false,
+      rafId: 0,
+      countdownTimer: 0,
+      lastFrame: 0,
+      battleStart: 0,
+      frame: 0,
+      simulationTimeMs: 0,
+      accumulatorMs: 0,
+      battleMode: BATTLE_MODE.cpu,
+      projectiles: [],
+      projectileSeq: 1,
+      effects: [],
+      keys: {
+        left: false,
+        right: false,
+        crouch: false
+      },
+      currentInputs: {
+        player: makeEmptyInput(),
+        cpu: makeEmptyInput()
+      },
+      inputLog: [],
+      replayMode: false,
+      replayInputs: null,
+      hashLog: [],
+      onlineSession: null,
+      stageRect: null,
+      stats: null,
+      player: null,
+      cpu: null,
+      cpuBrain: {
+        nextThink: 0,
+        move: 0,
+        crouchUntil: 0,
+        nextAttackCheck: 0,
+        scheduledActions: []
+      },
+      playerOnLeft: true,
+      historyLockActive: false,
+      lastViewportTouchAt: 0
+    };
+
+    function clamp(value, min, max) {
+      return Math.max(min, Math.min(max, value));
+    }
+
+    function randItem(list) {
+      return list[Math.floor(Math.random() * list.length)];
+    }
+
+    function nowMs() {
+      return performance.now();
+    }
+
+    function getBattleNowMs() {
+      if (Number.isFinite(state.simulationTimeMs) && (state.running || state.countdown || state.ended || state.simulationTimeMs > 0)) {
+        return state.simulationTimeMs;
+      }
+      return nowMs();
+    }
+
+    function makeEmptyInput() {
+      return {
+        left: false,
+        right: false,
+        crouch: false,
+        jumpPressed: false,
+        attackPressed: false,
+        guardPressed: false
+      };
+    }
+
+    function cloneInput(input) {
+      return {
+        left: Boolean(input && input.left),
+        right: Boolean(input && input.right),
+        crouch: Boolean(input && input.crouch),
+        jumpPressed: Boolean(input && input.jumpPressed),
+        attackPressed: Boolean(input && input.attackPressed),
+        guardPressed: Boolean(input && input.guardPressed)
+      };
+    }
+
+    function clearPressedInputs(input) {
+      if (!input) return;
+      input.jumpPressed = false;
+      input.attackPressed = false;
+      input.guardPressed = false;
+    }
+
+    function resetInputBuffers() {
+      state.currentInputs = { player: makeEmptyInput(), cpu: makeEmptyInput() };
+      state.keys.left = false;
+      state.keys.right = false;
+      state.keys.crouch = false;
+    }
+
+    function sanitizeName(value, fallback, maxLen) {
+      const cleaned = String(value || "").replace(/[\r\n\t]/g, " ").trim().slice(0, maxLen);
+      return cleaned || fallback;
+    }
+
+    function showScreen(name) {
+      Object.values(dom.screens).forEach((screen) => { if (screen) screen.classList.remove("active"); });
+      if (dom.screens[name]) dom.screens[name].classList.add("active");
+    }
+
+    function openRulesModal() {
+      if (!dom.rulesModal) return;
+      dom.rulesModal.classList.add("active");
+      dom.rulesModal.setAttribute("aria-hidden", "false");
+    }
+
+    function closeRulesModal() {
+      if (!dom.rulesModal) return;
+      dom.rulesModal.classList.remove("active");
+      dom.rulesModal.setAttribute("aria-hidden", "true");
+    }
+
+    function showToast(message) {
+      clearTimeout(toastTimer);
+      dom.toast.textContent = message;
+      dom.toast.classList.add("active");
+      toastTimer = setTimeout(() => dom.toast.classList.remove("active"), 1700);
+    }
+
+    function makeShareText(result) {
+      const info = RESULT_TEXT[result.outcome] || RESULT_TEXT.draw;
+      const phrase = makeOutcomePhrase(result.outcome, result.cpuName, result.playerName);
+      return `${GAME.title}　で遊んだ！\n結果：${info.label}\n${phrase}\nスコア：${result.score}点\n${GAME.url}`;
+    }
+
+    async function shareText(text) {
+      try {
+        if (navigator.share) {
+          await navigator.share({ text });
+          return;
+        }
+        await navigator.clipboard.writeText(text);
+        showToast("シェア文をコピーしました");
+      } catch (error) {
+        try {
+          await navigator.clipboard.writeText(text);
+          showToast("シェア文をコピーしました");
+        } catch (copyError) {
+          showToast("コピーできませんでした");
+        }
+      }
+    }
+
+    function initHeadGrid(root, type) {
+      root.innerHTML = "";
+      const randomBtn = document.createElement("button");
+      randomBtn.type = "button";
+      randomBtn.className = "head-choice selected";
+      randomBtn.textContent = "？";
+      randomBtn.dataset.value = "";
+      root.appendChild(randomBtn);
+
+      HEADS.forEach((head) => {
+        const btn = document.createElement("button");
+        btn.type = "button";
+        btn.className = "head-choice";
+        btn.textContent = head;
+        btn.dataset.value = head;
+        root.appendChild(btn);
+      });
+
+      root.addEventListener("click", (event) => {
+        const btn = event.target.closest("button");
+        if (!btn) return;
+        root.querySelectorAll("button").forEach((b) => b.classList.remove("selected"));
+        btn.classList.add("selected");
+        if (type === "player") selectedPlayerHead = btn.dataset.value || "";
+        if (type === "cpu") selectedCpuHead = btn.dataset.value || "";
+      });
+    }
+
+    function collectSettings() {
+      const battleMode = state.battleMode || BATTLE_MODE.cpu;
+      const playerName = sanitizeName(dom.playerNameInput.value, "名無し", 12);
+      try { localStorage.setItem("songen_player_name", playerName); } catch (error) {}
+      const opponentFallback = battleMode === BATTLE_MODE.local2p ? "P2" : randItem(CPU_NAMES);
+      const cpuName = sanitizeName(dom.cpuNameInput.value, opponentFallback, 10);
+      const playerHead = selectedPlayerHead || randItem(HEADS);
+      const cpuHead = selectedCpuHead || randItem(HEADS);
+      const playerSide = document.querySelector('input[name="playerSide"]:checked')?.value || "left";
+      return { battleMode, playerName, cpuName, playerHead, cpuHead, playerSide };
+    }
+
+    function createFighter(id, name, head, x) {
+      return {
+        id,
+        name,
+        head,
+        x,
+        y: 0,
+        stamina: LIMITS.staminaMax,
+        staminaCarry: 0,
+        lastAttackAt: -9999,
+        guardUntil: 0,
+        guardStance: "mid",
+        jumpUntil: 0,
+        hitInvulnerableUntil: 0,
+        crouch: false,
+        parts: {
+          leftArm: { damage: 0, broken: false },
+          rightArm: { damage: 0, broken: false },
+          leftFoot: { damage: 0, broken: false },
+          rightFoot: { damage: 0, broken: false },
+          head: { damage: 0, broken: false }
+        }
+      };
+    }
+
+    function getStageRect() {
+      const rect = dom.stage.getBoundingClientRect();
+      const fallbackWidth = Math.max(300, window.innerWidth || document.documentElement.clientWidth || 360);
+      const fallbackHeight = Math.max(300, (window.innerHeight || document.documentElement.clientHeight || 640) - parseFloat(getComputedStyle(document.documentElement).getPropertyValue("--stage-bottom-space")));
+      state.stageRect = {
+        width: rect.width > 40 ? rect.width : fallbackWidth,
+        height: rect.height > 120 ? rect.height : fallbackHeight,
+        left: rect.left || 0,
+        top: rect.top || 0
+      };
+      return state.stageRect;
+    }
+
+    function setupBattle(settings) {
+      cancelAnimationFrame(state.rafId);
+      clearInterval(state.countdownTimer);
+      state.running = false;
+      state.countdown = false;
+      state.ended = false;
+      state.frame = 0;
+      state.simulationTimeMs = 0;
+      state.accumulatorMs = 0;
+      state.projectiles = [];
+      state.effects = [];
+      state.projectileSeq = 1;
+      state.inputLog = [];
+      state.hashLog = [];
+      resetInputBuffers();
+      setBattleControlsEnabled(true);
+      state.battleMode = settings.battleMode || BATTLE_MODE.cpu;
+      state.cpuBrain = { nextThink: 0, move: 0, crouchUntil: 0, nextAttackCheck: 0, scheduledActions: [] };
+      dom.stage.querySelectorAll(".projectile,.float-fx").forEach((el) => el.remove());
+      lastSettings = settings;
+
+      showScreen("battle");
+      dom.countdown.textContent = "準備";
+      dom.countdown.classList.add("active");
+
+      requestAnimationFrame(() => {
+        requestAnimationFrame(() => {
+          initializeBattleActors(settings);
+          beginCountdown();
+        });
+      });
+    }
+
+    function initializeBattleActors(settings) {
+      const rect = getStageRect();
+      const leftX = clamp(rect.width * 0.28, 70, Math.max(70, rect.width - 70));
+      const rightX = clamp(rect.width * 0.72, 70, Math.max(70, rect.width - 70));
+
+      state.playerOnLeft = settings.playerSide === "left";
+      const playerX = state.playerOnLeft ? leftX : rightX;
+      const cpuX = state.playerOnLeft ? rightX : leftX;
+      state.player = createFighter("player", settings.playerName, settings.playerHead, playerX);
+      state.cpu = createFighter("cpu", settings.cpuName, settings.cpuHead, cpuX);
+      state.stats = {
+        attacks: 0,
+        guardSuccess: 0,
+        enemyPartsBroken: 0,
+        playerPartsBroken: 0,
+        enemyHeadBroken: 0,
+        playerHeadBroken: 0,
+        enemyBrokenPartHits: 0,
+        playerBrokenPartHits: 0,
+        elapsedSec: 0,
+        score: 0
+      };
+      renderHud(0);
+      renderAll();
+    }
+
+    function beginCountdown() {
+      enableGameplayBrowserGuard();
+      clearInterval(state.countdownTimer);
+      const steps = ["3", "2", "1", "開始"];
+      let index = 0;
+      dom.countdown.textContent = steps[index];
+      dom.countdown.classList.add("active");
+      state.countdown = true;
+      state.countdownTimer = setInterval(() => {
+        index += 1;
+        if (index < steps.length) {
+          dom.countdown.textContent = steps[index];
+          return;
+        }
+        clearInterval(state.countdownTimer);
+        state.countdownTimer = 0;
+        dom.countdown.classList.remove("active");
+        state.countdown = false;
+        startBattleLoop();
+      }, 720);
+    }
+
+    function startBattleLoop() {
+      if (!state.player || !state.cpu) return;
+      getStageRect();
+      keepFightersSeparated();
+      renderAll();
+      state.running = true;
+      state.ended = false;
+      state.frame = 0;
+      state.simulationTimeMs = 0;
+      state.accumulatorMs = 0;
+      state.battleStart = nowMs();
+      state.lastFrame = state.battleStart;
+      state.cpuBrain.nextThink = state.simulationTimeMs + 500;
+      state.cpuBrain.nextAttackCheck = state.simulationTimeMs + 950;
+      state.rafId = requestAnimationFrame(loop);
+    }
+
+    function loop(timestamp) {
+      if (!state.running || state.ended) return;
+      const elapsedRealMs = clamp(timestamp - state.lastFrame, 0, 100);
+      state.lastFrame = timestamp;
+      state.accumulatorMs += elapsedRealMs;
+
+      let ticks = 0;
+      while (state.accumulatorMs >= NETPLAY.fixedDtMs && ticks < NETPLAY.maxTicksPerFrame && state.running && !state.ended) {
+        tickSimulation();
+        state.accumulatorMs -= NETPLAY.fixedDtMs;
+        ticks += 1;
+      }
+
+      if (ticks >= NETPLAY.maxTicksPerFrame) {
+        state.accumulatorMs = 0;
+      }
+
+      renderAll();
+      const elapsed = Math.min(GAME.durationSec, state.simulationTimeMs / 1000);
+      renderHud(elapsed);
+
+      if (!state.ended) state.rafId = requestAnimationFrame(loop);
+    }
+    function tickSimulation() {
+      state.frame += 1;
+      state.simulationTimeMs += NETPLAY.fixedDtMs;
+      const timestamp = state.simulationTimeMs;
+      const dt = NETPLAY.fixedDtSec;
+
+      if (state.replayMode && state.replayInputs) {
+        applyReplayInputForFrame(state.frame);
+      }
+
+      syncLegacyKeysFromInput();
+      recordInputFrame();
+      updateFighterTimers(state.player, dt, timestamp);
+      updateFighterTimers(state.cpu, dt, timestamp);
+      applyInputToFighter(state.player, state.currentInputs.player, dt, timestamp);
+
+      if (state.battleMode === BATTLE_MODE.local2p || state.replayMode) {
+        applyInputToFighter(state.cpu, state.currentInputs.cpu, dt, timestamp);
+      } else {
+        processCpuScheduledActions(timestamp);
+        updateCpu(dt, timestamp);
+      }
+
+      updateProjectiles(timestamp);
+      const elapsed = Math.min(GAME.durationSec, state.simulationTimeMs / 1000);
+      state.stats.elapsedSec = Math.floor(elapsed);
+      state.stats.score = calcScore(false, Math.floor(elapsed));
+      if (state.frame % 60 === 0) {
+        state.hashLog.push({ frame: state.frame, hash: makeStateHash() });
+      }
+      clearPressedInputs(state.currentInputs.player);
+      clearPressedInputs(state.currentInputs.cpu);
+
+      if (elapsed >= GAME.durationSec && !state.ended) {
+        finishBattle("draw", GAME.durationSec);
+      }
+    }
+
+    function updateFighterTimers(fighter, dt, timestamp) {
+      if (!fighter) return;
+      fighter.staminaCarry += dt * 1000;
+      while (fighter.staminaCarry >= LIMITS.staminaRegenMs) {
+        fighter.staminaCarry -= LIMITS.staminaRegenMs;
+        fighter.stamina = Math.min(LIMITS.staminaMax, fighter.stamina + 1);
+      }
+      if (fighter.jumpUntil <= timestamp) {
+        fighter.jumpUntil = 0;
+      }
+    }
+
+    function syncLegacyKeysFromInput() {
+      state.keys.left = Boolean(state.currentInputs.player.left);
+      state.keys.right = Boolean(state.currentInputs.player.right);
+      state.keys.crouch = Boolean(state.currentInputs.player.crouch);
+    }
+
+    function applyInputToFighter(fighter, input, dt, timestamp) {
+      if (!fighter || !input) return;
+      let dir = 0;
+      if (input.left) dir -= 1;
+      if (input.right) dir += 1;
+      fighter.crouch = Boolean(input.crouch) && !isJumping(fighter);
+      moveFighter(fighter, dir, dt);
+      if (input.jumpPressed) jump(fighter, timestamp);
+      if (input.attackPressed) doAttack(fighter, timestamp);
+      if (input.guardPressed) startGuard(fighter, timestamp);
+    }
+
+    function updateFighterState(fighter, dt, timestamp) {
+      updateFighterTimers(fighter, dt, timestamp);
+      if (fighter && fighter.id === "player") {
+        applyInputToFighter(fighter, state.currentInputs.player, dt, timestamp);
+      }
+    }
+
+    function updateCpu(dt, timestamp) {
+      if (state.battleMode !== BATTLE_MODE.cpu) return;
+      const cpu = state.cpu;
+      const player = state.player;
+      if (!cpu || !player) return;
+
+      if (timestamp >= state.cpuBrain.crouchUntil) {
+        cpu.crouch = false;
+      }
+
+      if (timestamp >= state.cpuBrain.nextThink) {
+        state.cpuBrain.nextThink = timestamp + 220 + Math.random() * 180;
+        const dist = Math.abs(player.x - cpu.x);
+        let move = 0;
+        if (dist > 225) {
+          move = player.x < cpu.x ? -1 : 1;
+        } else if (dist < 118 && Math.random() < 0.38) {
+          move = player.x < cpu.x ? 1 : -1;
+        } else if (Math.random() < 0.18) {
+          move = Math.random() < 0.5 ? -1 : 1;
+        }
+        state.cpuBrain.move = move;
+
+        if (!isJumping(cpu) && Math.random() < 0.12) {
+          cpu.crouch = true;
+          state.cpuBrain.crouchUntil = timestamp + 450 + Math.random() * 380;
+        }
+
+        if (!isJumping(cpu) && canJump(cpu) && Math.random() < 0.07) {
+          jump(cpu, timestamp);
+        }
+      }
+
+      moveFighter(cpu, state.cpuBrain.move, dt);
+
+      if (timestamp >= state.cpuBrain.nextAttackCheck) {
+        state.cpuBrain.nextAttackCheck = timestamp + 360 + Math.random() * 280;
+        const dist = Math.abs(player.x - cpu.x);
+        const range = LIMITS.fistRange;
+        if (hasAnyArm(cpu) && dist <= range + 12 && cpu.stamina >= 1 && Math.random() < 0.42) {
+          if (!isJumping(cpu) && Math.random() < 0.22 && canJump(cpu)) {
+            jump(cpu, timestamp);
+          }
+          doAttack(cpu, timestamp);
+        }
+      }
+    }
+
+    function canMove(fighter) {
+      return !fighter.parts.leftFoot.broken || !fighter.parts.rightFoot.broken;
+    }
+
+    function movementMultiplier(fighter) {
+      const brokenCount = Number(fighter.parts.leftFoot.broken) + Number(fighter.parts.rightFoot.broken);
+      if (brokenCount >= 2) return 0;
+      if (brokenCount === 1) return 0.5;
+      return 1;
+    }
+
+    function canJump(fighter) {
+      return !fighter.parts.leftFoot.broken && !fighter.parts.rightFoot.broken;
+    }
+
+    function moveFighter(fighter, dir, dt) {
+      if (!dir || !canMove(fighter)) return;
+      const rect = state.stageRect || getStageRect();
+      const speed = LIMITS.moveSpeed * movementMultiplier(fighter);
+      fighter.x += dir * speed * dt;
+      fighter.x = clamp(fighter.x, 48, rect.width - 48);
+      keepFightersSeparated();
+    }
+
+    function keepFightersSeparated() {
+      const p = state.player;
+      const c = state.cpu;
+      if (!p || !c) return;
+      const rect = state.stageRect || getStageRect();
+      const pad = 54;
+      const minX = pad;
+      const maxX = Math.max(pad + 120, rect.width - pad);
+      const usableGap = Math.max(72, maxX - minX - 8);
+      const minGap = Math.min(LIMITS.minGap, usableGap);
+      const playerLeft = state.playerOnLeft !== false;
+
+      // 試合開始時に選んだ左右関係を固定する。
+      // キャラがすり抜けて左右が入れ替わると、攻撃方向・前面腕・近い側の足が崩れるため。
+      let leftFighter = playerLeft ? p : c;
+      let rightFighter = playerLeft ? c : p;
+
+      if (leftFighter.x > rightFighter.x - minGap) {
+        const mid = (leftFighter.x + rightFighter.x) / 2;
+        leftFighter.x = mid - minGap / 2;
+        rightFighter.x = mid + minGap / 2;
+      }
+
+      // 端で押し合った時も、2体まとめて画面内に戻す。
+      if (leftFighter.x < minX) {
+        const shift = minX - leftFighter.x;
+        leftFighter.x += shift;
+        rightFighter.x += shift;
+      }
+      if (rightFighter.x > maxX) {
+        const shift = rightFighter.x - maxX;
+        leftFighter.x -= shift;
+        rightFighter.x -= shift;
+      }
+
+      leftFighter.x = clamp(leftFighter.x, minX, maxX - minGap);
+      rightFighter.x = clamp(rightFighter.x, leftFighter.x + minGap, maxX);
+    }
+
+    function isJumping(fighter) {
+      return fighter.jumpUntil > getBattleNowMs();
+    }
+
+    function postureOf(fighter) {
+      if (isJumping(fighter)) return "jump";
+      if (fighter.crouch) return "crouch";
+      return "stand";
+    }
+
+    function attackHeightFor(fighter) {
+      const posture = postureOf(fighter);
+      // ジャンプ攻撃は相手の頭を狙う high 攻撃。
+      // ただし、🤜の表示Y座標は yForAttackHeight で💪🫀💪の高さに合わせる。
+      if (posture === "jump") return "high";
+      if (posture === "crouch") return "low";
+      return "mid";
+    }
+
+    function jump(fighter, timestamp) {
+      if (!canJump(fighter) || isJumping(fighter)) return false;
+      fighter.crouch = false;
+      fighter.jumpUntil = timestamp + LIMITS.jumpMs;
+      return true;
+    }
+
+    function hasAnyArm(fighter) {
+      return !fighter.parts.leftArm.broken || !fighter.parts.rightArm.broken;
+    }
+
+    function canAttack(fighter, timestamp) {
+      // 攻撃は拳のみ。頭突きは存在しない。
+      // 通常の決着ルートは「防御側の前面腕が壊れる → 心臓に通る」。
+      // ここは想定外の保険として、使える腕が1本もない場合だけ攻撃不可にする。
+      if (fighter.stamina < 1) return false;
+      if (timestamp - fighter.lastAttackAt < LIMITS.attackCooldownMs) return false;
+      return hasAnyArm(fighter);
+    }
+    function doAttack(fighter, timestamp) {
+      if (!canAttack(fighter, timestamp)) return false;
+      const target = fighter.id === "player" ? state.cpu : state.player;
+      const dir = target.x > fighter.x ? 1 : -1;
+      const height = attackHeightFor(fighter);
+      const range = LIMITS.fistRange;
+      const emoji = dir > 0 ? "🤜" : "🤛";
+
+      // 弾の終点は相手の中心ではなく、攻撃の最大射程。
+      // 実際の命中は毎フレームの現在座標と相手パーツ座標の交差で決める。
+      const startX = fighter.x + dir * 24;
+      const endX = fighter.x + dir * range;
+      const travel = Math.abs(endX - startX);
+      const duration = attackDuration(travel);
+
+      fighter.stamina = Math.max(0, fighter.stamina - 1);
+      fighter.lastAttackAt = timestamp;
+
+      if (fighter.id === "player") state.stats.attacks += 1;
+
+      const projectile = {
+        id: state.projectileSeq++,
+        owner: fighter.id,
+        target: target.id,
+        type: "fist",
+        height,
+        emoji,
+        startX,
+        endX,
+        previousX: startX,
+        currentX: startX,
+        y: yForAttackHeight(height, fighter),
+        dir,
+        createdAt: timestamp,
+        durationMs: duration * 1000,
+        progress: 0,
+        removed: false,
+        resolved: false,
+        el: null
+      };
+      projectile.el = createProjectileEl(projectile);
+      state.projectiles.push(projectile);
+      if (fighter.id === "player") maybeCpuGuard(projectile, timestamp);
+      return true;
+    }
+
+    function attackDuration(distance) {
+      if (distance <= 72) return 0.2;
+      if (distance <= 120) return 0.35;
+      return 0.5;
+    }
+
+    function yForHeight(height, fighter) {
+      const rect = state.stageRect || getStageRect();
+      const base = fighter && fighter.y ? fighter.y : Math.max(120, rect.height - LIMITS.fighterGroundMargin);
+      if (height === "high") return base - 35;
+      if (height === "low") return base + 34;
+      return base;
+    }
+
+    function createProjectileEl(projectile) {
+      const el = document.createElement("div");
+      el.className = "projectile";
+      el.textContent = projectile.emoji;
+      el.style.left = `${projectile.startX}px`;
+      el.style.top = `${projectile.y}px`;
+      dom.stage.appendChild(el);
+      return el;
+    }
+
+    
+
+    function maybeCpuGuard(projectile, timestamp) {
+      if (state.battleMode !== BATTLE_MODE.cpu) return;
+      const cpu = state.cpu;
+      const player = state.player;
+      if (!cpu || !player || state.ended) return;
+
+      const predictedPart = predictHitTarget(projectile, cpu, player);
+      if (predictedPart === "miss") return;
+
+      const dangerous = predictedPart === "heart";
+      const defenseChance = dangerous ? 0.82 : 0.42;
+      if (Math.random() > defenseChance) return;
+
+      const delay = clamp(projectile.durationMs * (0.32 + Math.random() * 0.22), 70, 260);
+      const executeAtMs = timestamp + delay;
+
+      if (projectile.height === "high") {
+        state.cpuBrain.scheduledActions.push({
+          executeAtMs,
+          type: "crouch",
+          projectileId: projectile.id,
+          untilMs: executeAtMs + 420 + Math.random() * 240
+        });
+        return;
+      }
+
+      state.cpuBrain.scheduledActions.push({
+        executeAtMs,
+        type: "guard",
+        projectileId: projectile.id,
+        crouch: projectile.height === "low"
+      });
+    }
+
+    function processCpuScheduledActions(timestamp) {
+      const actions = state.cpuBrain.scheduledActions || [];
+      if (!actions.length || state.battleMode !== BATTLE_MODE.cpu) return;
+      const remaining = [];
+      for (const action of actions) {
+        if (!action || action.executeAtMs > timestamp) {
+          remaining.push(action);
+          continue;
+        }
+        const cpu = state.cpu;
+        if (!state.running || state.ended || !cpu || isJumping(cpu)) continue;
+        const projectile = state.projectiles.find((p) => p.id === action.projectileId);
+        if (!projectile || projectile.removed) continue;
+
+        if (action.type === "crouch") {
+          cpu.crouch = true;
+          state.cpuBrain.crouchUntil = action.untilMs || (timestamp + 420);
+          continue;
+        }
+
+        if (action.type === "guard") {
+          if (cpu.stamina < 0.5 || !hasAnyArm(cpu)) continue;
+          cpu.crouch = Boolean(action.crouch);
+          startGuard(cpu, timestamp);
+        }
+      }
+      state.cpuBrain.scheduledActions = remaining;
+    }
+
+    function startGuard(fighter, timestamp) {
+      if (isJumping(fighter)) return false;
+      if (!hasAnyArm(fighter)) return false;
+      if (fighter.stamina < 0.5) return false;
+      fighter.stamina = Math.max(0, fighter.stamina - 0.5);
+      fighter.guardUntil = timestamp + LIMITS.guardMs;
+      fighter.guardStance = fighter.crouch ? "low" : "mid";
+      return true;
+    }
+
+    
+
+    function updateProjectiles(timestamp) {
+      const heartHits = [];
+
+      for (const p of state.projectiles) {
+        if (p.removed) continue;
+        const rawProgress = (timestamp - p.createdAt) / p.durationMs;
+        const progress = clamp(rawProgress, 0, 1);
+        p.previousX = Number.isFinite(p.currentX) ? p.currentX : p.startX;
+        p.currentX = p.startX + (p.endX - p.startX) * progress;
+        p.progress = rawProgress;
+        if (p.el) {
+          p.el.style.left = `${p.currentX}px`;
+          p.el.style.top = `${p.y}px`;
+        }
+      }
+
+      resolveProjectileCollisions();
+
+      for (const p of state.projectiles) {
+        if (p.removed || p.resolved) continue;
+
+        const impact = getProjectileImpactInfo(p, timestamp);
+        const hasImpact = impact.type !== "miss" && projectileReachedImpact(p, impact.x);
+
+        if (hasImpact) {
+          p.resolved = true;
+          p.currentX = impact.x;
+          if (p.el) {
+            p.el.style.left = `${p.currentX}px`;
+            p.el.style.top = `${p.y}px`;
+          }
+          const result = resolveAttackHit(p, timestamp, impact);
+          p.removed = true;
+          if (p.el) p.el.remove();
+          if (result && result.type === "heart") heartHits.push(result.owner);
+          continue;
+        }
+
+        if (p.progress >= 1) {
+          p.resolved = true;
+          createEffect("…", p.currentX, p.y);
+          p.removed = true;
+          if (p.el) p.el.remove();
+        }
+      }
+
+      state.projectiles = state.projectiles.filter((p) => !p.removed);
+      const playerHeart = heartHits.includes("player");
+      const cpuHeart = heartHits.includes("cpu");
+      if (playerHeart && cpuHeart) {
+        finishBattle("draw");
+      } else if (playerHeart) {
+        finishBattle("win");
+      } else if (cpuHeart) {
+        finishBattle("loss");
+      }
+    }
+
+    function resolveProjectileCollisions() {
+      for (let i = 0; i < state.projectiles.length; i++) {
+        const a = state.projectiles[i];
+        if (a.removed || a.type !== "fist") continue;
+        for (let j = i + 1; j < state.projectiles.length; j++) {
+          const b = state.projectiles[j];
+          if (b.removed || b.type !== "fist") continue;
+          if (a.owner === b.owner || a.height !== b.height) continue;
+          if (Math.abs((a.currentX || a.startX) - (b.currentX || b.startX)) <= 28) {
+            createEffect("💥", ((a.currentX || a.startX) + (b.currentX || b.startX)) / 2, a.y);
+            a.removed = true;
+            b.removed = true;
+            if (a.el) a.el.remove();
+            if (b.el) b.el.remove();
+          }
+        }
+      }
+    }
+
+    function getProjectileImpactInfo(projectile, timestamp) {
+      const attacker = projectile.owner === "player" ? state.player : state.cpu;
+      const target = projectile.target === "player" ? state.player : state.cpu;
+
+      if (guardSucceeds(target, projectile, timestamp)) {
+        const guardArm = selectedGuardArm(target, attacker) || frontArmFor(target, attacker);
+        return {
+          type: "guard",
+          part: guardArm,
+          x: target.x + visualPartOffset(target, guardArm, attacker),
+          y: yForHeight(target.guardStance, target)
+        };
+      }
+
+      const targetPart = predictHitTarget(projectile, target, attacker);
+      if (targetPart === "miss") {
+        return {
+          type: "miss",
+          part: "miss",
+          x: null,
+          y: projectile.y
+        };
+      }
+
+      return {
+        type: targetPart === "heart" ? "heart" : "part",
+        part: targetPart,
+        x: target.x + visualPartOffset(target, targetPart, attacker),
+        y: yForPart(target, targetPart || projectile.height)
+      };
+    }
+    function projectileReachedImpact(projectile, impactX) {
+      if (!Number.isFinite(impactX)) return false;
+
+      const previousX = Number.isFinite(projectile.previousX) ? projectile.previousX : projectile.startX;
+      const currentX = Number.isFinite(projectile.currentX) ? projectile.currentX : projectile.startX;
+      const padding = 20;
+
+      const minX = Math.min(previousX, currentX) - padding;
+      const maxX = Math.max(previousX, currentX) + padding;
+      if (impactX < minX || impactX > maxX) return false;
+
+      if (projectile.dir > 0) {
+        return currentX + padding >= impactX;
+      }
+      return currentX - padding <= impactX;
+    }
+
+    function resolveAttackHit(projectile, timestamp, impactInfo) {
+      const target = projectile.target === "player" ? state.player : state.cpu;
+      const impact = impactInfo || getProjectileImpactInfo(projectile, timestamp);
+      const impactX = Number.isFinite(impact.x) ? impact.x : (Number.isFinite(projectile.currentX) ? projectile.currentX : projectile.endX);
+      const impactY = Number.isFinite(impact.y) ? impact.y : projectile.y;
+
+      if (impact.type === "miss") {
+        createEffect("…", impactX, impactY);
+        return { type: "miss" };
+      }
+
+      if (target.hitInvulnerableUntil && target.hitInvulnerableUntil > timestamp) {
+        createEffect("…", impactX, impactY);
+        return { type: "miss" };
+      }
+
+      if (impact.type === "guard") {
+        consumeGuardSuccess(target);
+        createEffect("✨", impactX, impactY);
+        return { type: "guard" };
+      }
+
+      if (impact.part === "heart" || impact.type === "heart") {
+        createEffect("🫀", impactX, impactY);
+        return { type: "heart", owner: projectile.owner };
+      }
+
+      damagePart(target, impact.part, projectile.owner);
+      return { type: "part", part: impact.part };
+    }
+
+    function guardSucceeds(target, projectile, timestamp) {
+      if (target.guardUntil < timestamp) return false;
+      if (!hasAnyArm(target)) return false;
+      if (isJumping(target)) return false;
+      const attacker = projectile.owner === "player" ? state.player : state.cpu;
+      if (!selectedGuardArm(target, attacker)) return false;
+      if (target.guardStance === "mid" && projectile.height === "mid") return true;
+      if (target.guardStance === "low" && projectile.height === "low") return true;
+      return false;
+    }
+
+    function consumeGuardSuccess(target) {
+      target.stamina = Math.max(0, target.stamina - 0.5);
+      if (target.id === "player") {
+        state.stats.guardSuccess += 1;
+      }
+    }
+
+
+
+    
+
+        
+
+    
+
+    function nearestAliveArmOrFoot(target, attacker) {
+      const candidates = ["leftArm", "rightArm", "leftFoot", "rightFoot"]
+        .filter((part) => target.parts[part] && !target.parts[part].broken)
+        .map((part) => ({
+          part,
+          distance: Math.abs((target.x + visualPartOffset(target, part, attacker)) - attacker.x)
+        }))
+        .sort((a, b) => a.distance - b.distance);
+
+      return candidates.length ? candidates[0].part : null;
+    }
+
+    function predictHitTarget(projectile, target, attacker) {
+      const posture = postureOf(target);
+      const height = projectile.height;
+
+      if (posture === "stand") {
+        // 相手が立ち：
+        // high → 頭
+        // mid  → 前面の腕 → 心臓。残った腕はガード時だけ防御に使える。
+        // low  → 足。足がなければ空振り。
+        if (height === "high") return "head";
+        if (height === "mid") return frontAliveArm(target, attacker) || "heart";
+        if (height === "low") return nearestAliveFoot(target, attacker) || "miss";
+      }
+
+      if (posture === "crouch") {
+        // 相手がしゃがみ：
+        // high → 空振り
+        // mid  → 頭
+        // low  → 近い腕または足 → 心臓
+        if (height === "high") return "miss";
+        if (height === "mid") return "head";
+        if (height === "low") return nearestAliveArmOrFoot(target, attacker) || "heart";
+      }
+
+      if (posture === "jump") {
+        // 相手がジャンプ：
+        // 足があれば足。足がなければ空振り。
+        return nearestAliveFoot(target, attacker) || "miss";
+      }
+
+      return "miss";
+    }
+
+    function frontAliveArm(target, attacker) {
+      const front = getNearPart(target, attacker, "Arm");
+      return target.parts[front].broken ? null : front;
+    }
+
+    
+
+    function nearestAliveFoot(target, attacker) {
+      const near = getNearPart(target, attacker, "Foot");
+      const far = near === "leftFoot" ? "rightFoot" : "leftFoot";
+      if (!target.parts[near].broken) return near;
+      if (!target.parts[far].broken) return far;
+      return null;
+    }
+
+    function getNearPart(target, attacker, suffix) {
+      const attackerIsLeft = attacker.x < target.x;
+      return attackerIsLeft ? `left${suffix}` : `right${suffix}`;
+    }
+
+    function oppositePart(part) {
+      if (part === "leftArm") return "rightArm";
+      if (part === "rightArm") return "leftArm";
+      if (part === "leftFoot") return "rightFoot";
+      if (part === "rightFoot") return "leftFoot";
+      return null;
+    }
+
+    function frontArmFor(target, attacker) {
+      return getNearPart(target, attacker, "Arm");
+    }
+
+    function selectedGuardArm(target, attacker) {
+      if (!attacker) return null;
+      const front = frontArmFor(target, attacker);
+      const back = oppositePart(front);
+      if (back && !target.parts[back].broken) return back;
+      if (!target.parts[front].broken) return front;
+      return null;
+    }
+
+    function damagePart(target, part, ownerId) {
+      const data = target.parts[part];
+      if (!data) return;
+
+      const attacker = ownerId === "player" ? state.player : state.cpu;
+
+      // 最新仕様：
+      // 壊れた腕・足は通常ヒット対象にも防御パーツにもならない。
+      // 念のためここに来ても、追加スコアや追加ダメージは発生させない。
+      // 頭だけは💩として見た目に残るため、頭への追加ヒットはスコアだけ変える。
+      if (data.broken) {
+        if (part !== "head") {
+          createEffect("…", target.x + visualPartOffset(target, part, attacker), yForPart(target, part));
+          return;
+        }
+
+        flashFighter(target.id);
+        target.hitInvulnerableUntil = getBattleNowMs() + LIMITS.hitStunMs;
+        if (ownerId === "player" && target.id === "cpu") {
+          state.stats.enemyBrokenPartHits += 1;
+          createEffect("+300", target.x + visualPartOffset(target, part, attacker), yForPart(target, part));
+        } else if (ownerId === "cpu" && target.id === "player") {
+          state.stats.playerBrokenPartHits += 1;
+          createEffect("-300", target.x + visualPartOffset(target, part, attacker), yForPart(target, part));
+        } else {
+          createEffect("•", target.x + visualPartOffset(target, part, attacker), yForPart(target, part));
+        }
+        return;
+      }
+
+      data.damage += 1;
+      flashFighter(target.id);
+      target.hitInvulnerableUntil = getBattleNowMs() + LIMITS.hitStunMs;
+      const brokenNow = data.damage >= PART_MAX[part];
+      createEffect(brokenNow ? "💥" : "•", target.x + visualPartOffset(target, part, attacker), yForPart(target, part));
+      if (brokenNow) {
+        data.broken = true;
+        if (ownerId === "player" && target.id === "cpu") {
+          state.stats.enemyPartsBroken += 1;
+          if (part === "head") state.stats.enemyHeadBroken += 1;
+        }
+        if (ownerId === "cpu" && target.id === "player") {
+          state.stats.playerPartsBroken += 1;
+          if (part === "head") state.stats.playerHeadBroken += 1;
+        }
+      }
+    }
+
+    
+
+    function staticPartOffset(part) {
+      if (part === "leftArm" || part === "leftFoot") return -38;
+      if (part === "rightArm" || part === "rightFoot") return 38;
+      return 0;
+    }
+
+    function visualPartOffset(target, part, attacker) {
+      if (!part || part === "heart" || part === "head" || part === "miss") return 0;
+
+      if (String(part).includes("Arm")) {
+        const guardActive = target.guardUntil > getBattleNowMs() && hasAnyArm(target) && !isJumping(target) && attacker;
+        if (guardActive && selectedGuardArm(target, attacker) === part) {
+          return staticPartOffset(frontArmFor(target, attacker));
+        }
+        return staticPartOffset(part);
+      }
+
+      if (String(part).includes("Foot") && attacker) {
+        const near = getNearPart(target, attacker, "Foot");
+        const far = oppositePart(near);
+        if (part === far && target.parts[near] && target.parts[near].broken && target.parts[far] && !target.parts[far].broken) {
+          return staticPartOffset(near);
+        }
+      }
+
+      return staticPartOffset(part);
+    }
+
+    function yForAttackHeight(height, fighter) {
+      // ジャンプ攻撃は判定上は high だが、見た目の🤜はジャンプ中の💪🫀💪の高さから出す。
+      // これにより、立ち相手の頭へ向かう見た目と当たり判定を合わせる。
+      if (height === "high" && fighter && postureOf(fighter) === "jump") {
+        return yForHeight("mid", fighter);
+      }
+      return yForHeight(height, fighter);
+    }
+    function yForPart(fighter, part) {
+      if (part === "head") return yForHeight("high", fighter);
+      if (String(part).includes("Foot")) return yForHeight("low", fighter);
+      return yForHeight("mid", fighter);
+    }
+
+    function flashFighter(id) {
+      const root = dom.fighters[id].root;
+      root.classList.add("hit-flash");
+      setTimeout(() => root.classList.remove("hit-flash"), 130);
+    }
+
+    function createEffect(text, x, y) {
+      const el = document.createElement("div");
+      el.className = "float-fx";
+      el.textContent = text;
+      el.style.left = `${x}px`;
+      el.style.top = `${y}px`;
+      dom.stage.appendChild(el);
+      setTimeout(() => el.remove(), 620);
+    }
+
+    function renderAll() {
+      getStageRect();
+      renderFighter(state.player);
+      renderFighter(state.cpu);
+    }
+
+    function renderFighter(fighter) {
+      if (!fighter) return;
+      const rect = state.stageRect || getStageRect();
+      const fdom = dom.fighters[fighter.id];
+      const posture = postureOf(fighter);
+      const jumpLift = posture === "jump" ? -38 : 0;
+      const crouchDrop = posture === "crouch" ? 10 : 0;
+      const baseGround = clamp(rect.height - LIMITS.fighterGroundMargin, 132, rect.height - 48);
+      const baseY = baseGround + jumpLift + crouchDrop;
+      fighter.y = baseY;
+      fdom.root.style.left = `${fighter.x}px`;
+      fdom.root.style.top = `${baseY}px`;
+      fdom.root.classList.toggle("jumping", posture === "jump");
+      fdom.root.classList.toggle("crouching", posture === "crouch");
+      fdom.name.textContent = fighter.name;
+      fdom.head.textContent = fighter.parts.head.broken ? "💩" : fighter.head;
+      fdom.head.classList.toggle("empty", false);
+      fdom.head.classList.toggle("broken-head", fighter.parts.head.broken);
+      renderArms(fighter, fdom);
+      renderFeet(fighter, fdom);
+      fdom.guard.classList.remove("active");
+    }
+
+    function renderArms(fighter, fdom) {
+      const opponent = fighter.id === "player" ? state.cpu : state.player;
+      const guardActive = fighter.guardUntil > getBattleNowMs() && hasAnyArm(fighter) && !isJumping(fighter) && opponent;
+      const front = opponent ? frontArmFor(fighter, opponent) : "rightArm";
+      const back = oppositePart(front);
+      const guardArm = guardActive ? selectedGuardArm(fighter, opponent) : null;
+
+      let leftText = fighter.parts.leftArm.broken ? "" : "💪";
+      let rightText = fighter.parts.rightArm.broken ? "" : "💪";
+      let leftGuard = false;
+      let rightGuard = false;
+
+      if (guardActive && guardArm) {
+        // ガード中は腕を追加表示しない。残っている腕そのものを前側セルへ移す。
+        leftText = "";
+        rightText = "";
+        if (front === "leftArm") {
+          leftText = "💪";
+          leftGuard = true;
+        } else {
+          rightText = "💪";
+          rightGuard = true;
+        }
+      }
+
+      fdom.leftArm.textContent = leftText;
+      fdom.rightArm.textContent = rightText;
+      fdom.leftArm.classList.toggle("empty", !leftText);
+      fdom.rightArm.classList.toggle("empty", !rightText);
+      fdom.leftArm.classList.toggle("guard-arm", leftGuard);
+      fdom.rightArm.classList.toggle("guard-arm", rightGuard);
+      fdom.leftArm.classList.remove("front-foot");
+      fdom.rightArm.classList.remove("front-foot");
+    }
+
+    function renderFeet(fighter, fdom) {
+      const opponent = fighter.id === "player" ? state.cpu : state.player;
+      const leftBroken = fighter.parts.leftFoot.broken;
+      const rightBroken = fighter.parts.rightFoot.broken;
+      let left = leftBroken ? "" : "🦵";
+      let right = rightBroken ? "" : "🦵";
+      let frontCell = null;
+
+      if (opponent) {
+        const near = getNearPart(fighter, opponent, "Foot");
+        const far = near === "leftFoot" ? "rightFoot" : "leftFoot";
+        if (fighter.parts[near].broken && !fighter.parts[far].broken) {
+          // 近い側の足が壊れた時は、遠い側の足を前側セルへ出す。
+          // 見た目と当たり判定を同じ前側位置にそろえる。
+          if (near === "leftFoot") {
+            left = "🦵";
+            right = "";
+            frontCell = "leftFoot";
+          } else {
+            left = "";
+            right = "🦵";
+            frontCell = "rightFoot";
+          }
+        } else if (!fighter.parts[near].broken) {
+          frontCell = near;
+        }
+      }
+
+      fdom.leftFoot.textContent = left;
+      fdom.rightFoot.textContent = right;
+      fdom.leftFoot.classList.toggle("empty", !left);
+      fdom.rightFoot.classList.toggle("empty", !right);
+      fdom.leftFoot.classList.toggle("front-foot", frontCell === "leftFoot" && !!left);
+      fdom.rightFoot.classList.toggle("front-foot", frontCell === "rightFoot" && !!right);
+    }
+
+    function renderHud(elapsed) {
+      const remain = Math.max(0, Math.ceil(GAME.durationSec - elapsed));
+      dom.timeValue.textContent = String(remain);
+      dom.scoreValue.textContent = `${state.stats.score}点`;
+      dom.staminaValue.textContent = state.player.stamina.toFixed(1);
+      const full = Math.floor(state.player.stamina);
+      const half = state.player.stamina % 1 >= 0.5 ? "▣" : "";
+      dom.staminaBar.textContent = "■".repeat(full) + half + "□".repeat(Math.max(0, 5 - full - (half ? 1 : 0)));
+    }
+
+    function calcScore(withVictory, elapsedSec) {
+      return (withVictory ? 5000 : 0)
+        - 30 * state.stats.attacks
+        + 120 * state.stats.guardSuccess
+        + 300 * Math.max(0, state.stats.enemyPartsBroken - state.stats.enemyHeadBroken)
+        + 1000 * state.stats.enemyHeadBroken
+        + 300 * state.stats.enemyBrokenPartHits
+        - 500 * state.stats.playerPartsBroken
+        - 300 * state.stats.playerBrokenPartHits
+        - 10 * elapsedSec;
+    }
+
+    function setBattleControlsEnabled(enabled) {
+      [
+        dom.buttons.left,
+        dom.buttons.right,
+        dom.buttons.jump,
+        dom.buttons.crouch,
+        dom.buttons.attack,
+        dom.buttons.guard,
+        dom.buttons.retire
+      ].forEach((button) => {
+        if (!button) return;
+        button.disabled = !enabled;
+        button.classList.toggle("disabled", !enabled);
+      });
+
+      if (!enabled) {
+        resetInputBuffers();
+        document.querySelectorAll(".control-btn.is-pressed,.control-btn.pressed").forEach((button) => {
+          button.classList.remove("is-pressed", "pressed");
+        });
+      }
+    }
+
+    function finishBattle(outcome, fixedElapsedSec) {
+      if (state.ended) return;
+      state.ended = true;
+      state.running = false;
+      state.countdown = false;
+      disableGameplayBrowserGuard();
+      cancelAnimationFrame(state.rafId);
+      const elapsed = fixedElapsedSec ?? Math.min(GAME.durationSec, Math.max(0, state.simulationTimeMs / 1000));
+      const elapsedSec = clamp(Math.ceil(elapsed), 0, GAME.durationSec);
+      state.stats.elapsedSec = elapsedSec;
+      const score = calcScore(outcome === "win", elapsedSec);
+      state.stats.score = score;
+      const result = {
+        outcome,
+        score,
+        attacks: state.stats.attacks,
+        guardSuccess: state.stats.guardSuccess,
+        enemyPartsBroken: state.stats.enemyPartsBroken,
+        playerPartsBroken: state.stats.playerPartsBroken,
+        elapsedSec,
+        playerName: state.player.name,
+        cpuName: state.cpu.name,
+        battleMode: state.battleMode,
+        enemyHeadBroken: state.stats.enemyHeadBroken,
+        playerHeadBroken: state.stats.playerHeadBroken
+      };
+      lastResult = result;
+      setBattleControlsEnabled(false);
+      populateResult(result);
+      sendScoreAfterResult(result);
+      showOutcomeAfterFinish(result);
+    }
+
+    function renderOutcomeFighter(fighter, fdom, card) {
+      if (!fighter || !fdom) return;
+
+      const posture = postureOf(fighter);
+
+      if (card) {
+        card.classList.remove("posture-stand", "posture-crouch", "posture-jump");
+        card.classList.add(`posture-${posture}`);
+      }
+
+      fdom.name.textContent = fighter.name;
+
+      fdom.head.textContent = fighter.parts.head.broken ? "💩" : fighter.head;
+      fdom.head.classList.toggle("broken-head", fighter.parts.head.broken);
+
+      fdom.leftArm.textContent = fighter.parts.leftArm.broken ? "" : "💪";
+      fdom.rightArm.textContent = fighter.parts.rightArm.broken ? "" : "💪";
+      fdom.leftFoot.textContent = fighter.parts.leftFoot.broken ? "" : "🦵";
+      fdom.rightFoot.textContent = fighter.parts.rightFoot.broken ? "" : "🦵";
+
+      ["leftArm", "rightArm", "leftFoot", "rightFoot"].forEach((key) => {
+        if (!fdom[key]) return;
+        fdom[key].classList.toggle("empty", !fdom[key].textContent);
+        fdom[key].classList.remove("guard-arm", "front-foot");
+      });
+    }
+    function renderOutcome(result) {
+      const info = RESULT_TEXT[result.outcome] || RESULT_TEXT.draw;
+      dom.outcomeStatus.textContent = info.label;
+      dom.outcomeMessage.textContent = makeOutcomePhrase(result.outcome, result.cpuName, result.playerName);
+      dom.outcomeScore.textContent = `スコア：${result.score}点`;
+
+      renderOutcomeFighter(state.player, dom.outcomeFighters.player, dom.outcomeCards.player);
+      renderOutcomeFighter(state.cpu, dom.outcomeFighters.cpu, dom.outcomeCards.cpu);
+
+      dom.outcomeCards.player.classList.remove("winner", "loser");
+      dom.outcomeCards.cpu.classList.remove("winner", "loser");
+
+      if (result.outcome === "win") {
+        dom.outcomeCards.player.classList.add("winner");
+        dom.outcomeCards.cpu.classList.add("loser");
+      } else if (result.outcome === "loss" || result.outcome === "retire") {
+        dom.outcomeCards.player.classList.add("loser");
+        dom.outcomeCards.cpu.classList.add("winner");
+      }
+    }
+
+    function showOutcomeAfterFinish(result) {
+      renderOutcome(result);
+      dom.countdown.textContent = "終了";
+      dom.countdown.classList.add("active");
+      setTimeout(() => {
+        dom.countdown.classList.remove("active");
+        showScreen("outcome");
+      }, 650);
+    }
+
+    function populateResult(result) {
+      const info = RESULT_TEXT[result.outcome] || RESULT_TEXT.draw;
+      dom.resultMain.textContent = info.label;
+      dom.resultSub.textContent = makeOutcomePhrase(result.outcome, result.cpuName, result.playerName);
+      dom.scoreBig.textContent = `${result.score}点`;
+      dom.bdAttacks.textContent = String(result.attacks);
+      dom.bdGuards.textContent = String(result.guardSuccess);
+      dom.bdEnemyBroken.textContent = String(result.enemyPartsBroken);
+      dom.bdPlayerBroken.textContent = String(result.playerPartsBroken);
+      dom.bdElapsed.textContent = `${result.elapsedSec}秒`;
+      dom.sendStatus.textContent = "ランキング送信中...";
+      dom.sendStatus.className = "send-status";
+    }
+
+    
+
+    async function sendScoreAfterResult(result) {
+      if (result && result.battleMode === BATTLE_MODE.local2p) {
+        dom.sendStatus.textContent = "ローカル2人対戦のため、ランキング送信は行いません";
+        dom.sendStatus.className = "send-status";
+        return;
+      }
+      if (!supabaseConfigured()) {
+        dom.sendStatus.textContent = "ランキング連携：Publishable key設定後に有効になります";
+        dom.sendStatus.className = "send-status";
+        return;
+      }
+
+      try {
+        await submitScore(result.playerName, result.score);
+        dom.sendStatus.textContent = "ランキング登録しました";
+        dom.sendStatus.className = "send-status ok";
+      } catch (error) {
+        const message = error && error.message ? String(error.message).slice(0, 90) : "詳細不明";
+        dom.sendStatus.textContent = "ランキング登録に失敗しました：" + message;
+        dom.sendStatus.className = "send-status ng";
+        console.warn("score submit failed", error);
+      }
+    }
+function getSupabasePublishableKey() {
+      return String(SUPABASE_PUBLISHABLE_KEY || "").trim();
+    }
+
+    function supabaseConfigured() {
+      const key = getSupabasePublishableKey();
+      return /^https:\/\/[^\s/]+\.supabase\.co\/?$/.test(SUPABASE_URL)
+        && key
+        && !key.includes("PASTE_")
+        && !key.includes("YOUR_")
+        && !key.includes("REPLACE_")
+        && !SUPABASE_URL.includes("YOUR_PROJECT_ID");
+    }
+
+    async function submitScore(displayName, score) {
+      if (!supabaseConfigured()) {
+        throw new Error("Supabase is not configured");
+      }
+
+      const endpoint = `${SUPABASE_URL.replace(/\/$/, "")}/rest/v1/rpc/submit_score`;
+      const key = getSupabasePublishableKey();
+      const headers = {
+        "Content-Type": "application/json",
+        "apikey": key,
+        "Authorization": `Bearer ${key}`
+      };
+      const body = {
+        p_display_name: displayName,
+        p_game_slug: GAME.slug,
+        p_score: Math.trunc(score),
+        p_client_version: GAME.version
+      };
+
+      const response = await fetch(endpoint, { method: "POST", headers, body: JSON.stringify(body) });
+      const text = await response.text().catch(() => "");
+      if (!response.ok) {
+        throw new Error(sanitizeSubmitError(text || `HTTP ${response.status}`));
+      }
+      return safeParseJson(text);
+    }
+
+    function safeParseJson(text) {
+      if (!text) return null;
+      try { return JSON.parse(text); } catch (error) { return null; }
+    }
+
+    function sanitizeSubmitError(text) {
+      return String(text || "")
+        .replaceAll(SUPABASE_PUBLISHABLE_KEY, "[publishable-key]")
+        .replace(/\s+/g, " ")
+        .trim()
+        .slice(0, 180);
+    }
+
+    function recordInputFrame() {
+      if (state.replayMode) return;
+      state.inputLog.push({
+        frame: state.frame,
+        player: cloneInput(state.currentInputs.player),
+        cpu: cloneInput(state.currentInputs.cpu)
+      });
+    }
+
+    function applyReplayInputForFrame(frame) {
+      const entry = Array.isArray(state.replayInputs) ? state.replayInputs.find((item) => item && item.frame === frame) : null;
+      state.currentInputs.player = cloneInput(entry && entry.player);
+      state.currentInputs.cpu = cloneInput(entry && entry.cpu);
+    }
+
+    function getInputLog() {
+      return JSON.parse(JSON.stringify(state.inputLog || []));
+    }
+
+    function getHashLog() {
+      return JSON.parse(JSON.stringify(state.hashLog || []));
+    }
+
+    function replayInputLog(log, settings) {
+      if (!Array.isArray(log)) throw new Error("input log must be an array");
+      state.replayMode = true;
+      state.replayInputs = JSON.parse(JSON.stringify(log));
+      const baseSettings = settings || lastSettings || collectSettings();
+      setupBattle(Object.assign({}, baseSettings));
+      return true;
+    }
+
+    function serializePartState(parts) {
+      const out = {};
+      ["leftArm", "rightArm", "leftFoot", "rightFoot", "head"].forEach((key) => {
+        out[key] = {
+          damage: parts && parts[key] ? parts[key].damage : 0,
+          broken: parts && parts[key] ? Boolean(parts[key].broken) : false
+        };
+      });
+      return out;
+    }
+
+    function serializeFighterForHash(fighter) {
+      if (!fighter) return null;
+      return {
+        id: fighter.id,
+        x: Math.round(fighter.x * 100) / 100,
+        stamina: Math.round(fighter.stamina * 100) / 100,
+        crouch: Boolean(fighter.crouch),
+        jumpUntil: Math.round(fighter.jumpUntil || 0),
+        guardUntil: Math.round(fighter.guardUntil || 0),
+        guardStance: fighter.guardStance,
+        lastAttackAt: Math.round(fighter.lastAttackAt || 0),
+        hitInvulnerableUntil: Math.round(fighter.hitInvulnerableUntil || 0),
+        parts: serializePartState(fighter.parts)
+      };
+    }
+
+    function serializeStatsForHash(stats) {
+      if (!stats) return null;
+      return {
+        attacks: stats.attacks,
+        guardSuccess: stats.guardSuccess,
+        enemyPartsBroken: stats.enemyPartsBroken,
+        playerPartsBroken: stats.playerPartsBroken,
+        enemyHeadBroken: stats.enemyHeadBroken,
+        playerHeadBroken: stats.playerHeadBroken,
+        enemyBrokenPartHits: stats.enemyBrokenPartHits,
+        playerBrokenPartHits: stats.playerBrokenPartHits,
+        elapsedSec: stats.elapsedSec,
+        score: stats.score
+      };
+    }
+
+    function serializeProjectilesForHash(projectiles) {
+      return (projectiles || []).map((p) => ({
+        id: p.id,
+        owner: p.owner,
+        target: p.target,
+        type: p.type,
+        height: p.height,
+        startX: Math.round(p.startX * 100) / 100,
+        endX: Math.round(p.endX * 100) / 100,
+        previousX: Math.round((p.previousX || 0) * 100) / 100,
+        currentX: Math.round((p.currentX || 0) * 100) / 100,
+        y: Math.round((p.y || 0) * 100) / 100,
+        dir: p.dir,
+        createdAt: Math.round(p.createdAt || 0),
+        durationMs: Math.round(p.durationMs || 0),
+        progress: Math.round((p.progress || 0) * 1000) / 1000,
+        removed: Boolean(p.removed),
+        resolved: Boolean(p.resolved)
+      }));
+    }
+
+    function makeStateSnapshotForHash() {
+      return {
+        frame: state.frame,
+        simulationTimeMs: Math.round(state.simulationTimeMs),
+        battleMode: state.battleMode,
+        player: serializeFighterForHash(state.player),
+        cpu: serializeFighterForHash(state.cpu),
+        stats: serializeStatsForHash(state.stats),
+        projectiles: serializeProjectilesForHash(state.projectiles),
+        ended: Boolean(state.ended)
+      };
+    }
+
+    function makeStateHash() {
+      const text = JSON.stringify(makeStateSnapshotForHash());
+      let hash = 2166136261;
+      for (let i = 0; i < text.length; i += 1) {
+        hash ^= text.charCodeAt(i);
+        hash = Math.imul(hash, 16777619);
+      }
+      return (hash >>> 0).toString(16).padStart(8, "0");
+    }
+    window.__songenDebug = {
+      getInputLog,
+      replayInputLog,
+      getHashLog,
+      makeStateHash,
+      makeStateSnapshotForHash
+    };
+
+    function setPressedButton(btn, pressed) {
+      btn.classList.toggle("is-pressed", Boolean(pressed));
+    }
+
+    function bindHoldButton(btn, onDown, onUp) {
+      const down = (event) => {
+        event.preventDefault();
+        setPressedButton(btn, true);
+        onDown();
+      };
+      const up = (event) => {
+        event.preventDefault();
+        setPressedButton(btn, false);
+        onUp();
+      };
+      btn.addEventListener("pointerdown", down);
+      btn.addEventListener("pointerup", up);
+      btn.addEventListener("pointercancel", up);
+      btn.addEventListener("pointerleave", up);
+    }
+
+    function setPlayerHoldInput(key, value) {
+      if (!state.currentInputs || !state.currentInputs.player) resetInputBuffers();
+      state.currentInputs.player[key] = Boolean(value);
+      state.keys[key] = Boolean(value);
+    }
+
+    function queuePlayerPressedInput(key) {
+      if (!state.running || state.ended) return;
+      if (!state.currentInputs || !state.currentInputs.player) resetInputBuffers();
+      state.currentInputs.player[key] = true;
+    }
+
+    function queueCpuPressedInput(key) {
+      if (!state.running || state.ended || state.battleMode !== BATTLE_MODE.local2p) return;
+      if (!state.currentInputs || !state.currentInputs.cpu) resetInputBuffers();
+      state.currentInputs.cpu[key] = true;
+    }
+
+    function bindControls() {
+      bindHoldButton(dom.buttons.left, () => setPlayerHoldInput("left", true), () => setPlayerHoldInput("left", false));
+      bindHoldButton(dom.buttons.right, () => setPlayerHoldInput("right", true), () => setPlayerHoldInput("right", false));
+      bindHoldButton(dom.buttons.crouch, () => setPlayerHoldInput("crouch", true), () => setPlayerHoldInput("crouch", false));
+
+      const bindPressed = (btn, key) => {
+        if (!btn) return;
+        btn.addEventListener("pointerdown", (event) => {
+          event.preventDefault();
+          setPressedButton(btn, true);
+          queuePlayerPressedInput(key);
+        });
+        const clear = (event) => {
+          if (event && event.preventDefault) event.preventDefault();
+          setPressedButton(btn, false);
+        };
+        btn.addEventListener("pointerup", clear);
+        btn.addEventListener("pointercancel", clear);
+        btn.addEventListener("pointerleave", clear);
+      };
+
+      bindPressed(dom.buttons.jump, "jumpPressed");
+      bindPressed(dom.buttons.attack, "attackPressed");
+      bindPressed(dom.buttons.guard, "guardPressed");
+
+      bindLocal2pKeyboardControls();
+      bindLegacyTouchControlFallback();
+    }
+
+
+    function bindLegacyTouchControlFallback() {
+      if (window.PointerEvent) return;
+
+      const bindHold = (btn, onDown, onUp) => {
+        if (!btn) return;
+        const down = (event) => {
+          event.preventDefault();
+          setPressedButton(btn, true);
+          onDown();
+        };
+        const up = (event) => {
+          if (event) event.preventDefault();
+          setPressedButton(btn, false);
+          onUp();
+        };
+        btn.addEventListener("touchstart", down, { passive: false });
+        btn.addEventListener("touchend", up, { passive: false });
+        btn.addEventListener("touchcancel", up, { passive: false });
+        btn.addEventListener("mousedown", down);
+        btn.addEventListener("mouseup", up);
+        btn.addEventListener("mouseleave", up);
+      };
+
+      const bindAction = (btn, key) => {
+        if (!btn) return;
+        const down = (event) => {
+          event.preventDefault();
+          setPressedButton(btn, true);
+          queuePlayerPressedInput(key);
+        };
+        const up = (event) => {
+          if (event) event.preventDefault();
+          setPressedButton(btn, false);
+        };
+        btn.addEventListener("touchstart", down, { passive: false });
+        btn.addEventListener("touchend", up, { passive: false });
+        btn.addEventListener("touchcancel", up, { passive: false });
+        btn.addEventListener("mousedown", down);
+        btn.addEventListener("mouseup", up);
+        btn.addEventListener("mouseleave", up);
+      };
+
+      bindHold(dom.buttons.left, () => setPlayerHoldInput("left", true), () => setPlayerHoldInput("left", false));
+      bindHold(dom.buttons.right, () => setPlayerHoldInput("right", true), () => setPlayerHoldInput("right", false));
+      bindHold(dom.buttons.crouch, () => setPlayerHoldInput("crouch", true), () => setPlayerHoldInput("crouch", false));
+
+      bindAction(dom.buttons.jump, "jumpPressed");
+      bindAction(dom.buttons.attack, "attackPressed");
+      bindAction(dom.buttons.guard, "guardPressed");
+    }
+
+    function bindLocal2pKeyboardControls() {
+      const map = {
+        j: { key: "left", hold: true },
+        l: { key: "right", hold: true },
+        k: { key: "crouch", hold: true },
+        i: { key: "jumpPressed", hold: false },
+        o: { key: "attackPressed", hold: false },
+        p: { key: "guardPressed", hold: false }
+      };
+
+      window.addEventListener("keydown", (event) => {
+        const item = map[String(event.key || "").toLowerCase()];
+        if (!item || state.battleMode !== BATTLE_MODE.local2p || !state.running || state.ended) return;
+        event.preventDefault();
+        if (item.hold) state.currentInputs.cpu[item.key] = true;
+        else if (!event.repeat) queueCpuPressedInput(item.key);
+      });
+
+      window.addEventListener("keyup", (event) => {
+        const item = map[String(event.key || "").toLowerCase()];
+        if (!item || !item.hold) return;
+        event.preventDefault();
+        state.currentInputs.cpu[item.key] = false;
+      });
+    }
+
+    function retireBattle() {
+      if (!state.running || state.ended) return;
+      resetInputBuffers();
+      finishBattle("retire");
+    }
+
+    function isGameplayLocked() {
+      return Boolean(state.running || state.countdown);
+    }
+
+    function enableGameplayBrowserGuard() {
+      document.body.classList.add("playing-lock");
+      if (!state.historyLockActive && window.history && history.pushState) {
+        try {
+          history.pushState({ songenGameLock: true }, "", location.href);
+          state.historyLockActive = true;
+        } catch (error) {
+          state.historyLockActive = false;
+        }
+      }
+    }
+
+    function disableGameplayBrowserGuard() {
+      document.body.classList.remove("playing-lock");
+      state.historyLockActive = false;
+    }
+
+    function bindBrowserGestureGuard() {
+      // iOS Safariの画面端スワイプ戻るはOS側操作なので、完全には止めきれない。
+      // ただしゲーム中に戻る操作が発生した場合は、同じページへ押し戻す。
+      window.addEventListener("popstate", () => {
+        if (isGameplayLocked()) {
+          try {
+            history.pushState({ songenGameLock: true }, "", location.href);
+            state.historyLockActive = true;
+          } catch (error) {
+            // ゲーム本体は止めない。
+          }
+          showToast("ゲーム中は戻る操作を無効にしています");
+        }
+      });
+
+      document.addEventListener("touchstart", (event) => {
+        if (!isGameplayLocked()) return;
+        state.lastViewportTouchAt = Date.now();
+        if (event.touches && event.touches.length > 1) {
+          event.preventDefault();
+        }
+      }, { passive: false });
+
+      document.addEventListener("touchmove", (event) => {
+        if (!isGameplayLocked()) return;
+        const target = event.target;
+        const interactive = target && target.closest && target.closest(".control-btn, .retire-btn");
+        if (interactive || (event.touches && event.touches.length > 1)) {
+          event.preventDefault();
+        }
+      }, { passive: false });
+
+      document.addEventListener("gesturestart", (event) => {
+        if (isGameplayLocked()) event.preventDefault();
+      }, { passive: false });
+      document.addEventListener("gesturechange", (event) => {
+        if (isGameplayLocked()) event.preventDefault();
+      }, { passive: false });
+      document.addEventListener("gestureend", (event) => {
+        if (isGameplayLocked()) event.preventDefault();
+      }, { passive: false });
+
+      document.addEventListener("dblclick", (event) => {
+        if (isGameplayLocked()) event.preventDefault();
+      }, { passive: false });
+    }
+
+    function bindTapButton(btn, handler) {
+      if (!btn) return;
+      let lastTapAt = 0;
+
+      const run = (event) => {
+        if (event) event.preventDefault();
+        const t = Date.now();
+        if (t - lastTapAt < 250) return;
+        lastTapAt = t;
+        handler(event);
+      };
+
+      btn.addEventListener("click", run);
+      btn.addEventListener("pointerup", (event) => {
+        if (event.pointerType === "touch") run(event);
+      });
+
+      if (!window.PointerEvent) {
+        btn.addEventListener("touchend", run, { passive: false });
+      }
+    }
+    function bindNavigation() {
+      bindTapButton(dom.buttons.homeCpu, () => showSetup(BATTLE_MODE.cpu));
+      bindTapButton(dom.buttons.homeLocal2p, () => showSetup(BATTLE_MODE.local2p));
+      bindTapButton(dom.buttons.homeOnline, showOnlineLobby);
+      bindTapButton(dom.buttons.homeRules, openRulesModal);
+      bindTapButton(dom.buttons.rulesClose, closeRulesModal);
+      dom.rulesModal.addEventListener("click", (event) => {
+        if (event.target === dom.rulesModal) closeRulesModal();
+      });
+      bindTapButton(dom.buttons.setupBack, () => showScreen("home"));
+      bindTapButton(dom.buttons.onlineBack, () => showScreen("home"));
+      bindTapButton(dom.buttons.onlineJoin, joinOnlineMockSlot);
+      bindTapButton(dom.buttons.setupStart, () => setupBattle(collectSettings()));
+      bindTapButton(dom.buttons.retire, retireBattle);
+      bindTapButton(dom.buttons.homeShare, () => shareText(`${GAME.title}　で遊ぼう！\n${GAME.url}`));
+      bindTapButton(dom.buttons.homeLab, () => { location.href = GAME.labUrl; });
+      bindTapButton(dom.buttons.outcomeResult, () => {
+        if (lastResult) showScreen("result");
+      });
+      bindTapButton(dom.buttons.resultLab, () => {
+        state.running = false;
+        state.countdown = false;
+        state.ended = true;
+        disableGameplayBrowserGuard();
+        cancelAnimationFrame(state.rafId);
+        clearInterval(state.countdownTimer);
+        resetInputBuffers();
+        dom.stage.querySelectorAll(".projectile,.float-fx").forEach((el) => el.remove());
+        showScreen("home");
+      });
+      bindTapButton(dom.buttons.retry, () => {
+        if (lastSettings) setupBattle(Object.assign({}, lastSettings));
+        else showSetup(state.battleMode || BATTLE_MODE.cpu);
+      });
+      bindTapButton(dom.buttons.resultShare, () => {
+        if (lastResult) shareText(makeShareText(lastResult));
+      });
+    }
+
+    function showSetup(mode) {
+      state.battleMode = mode || state.battleMode || BATTLE_MODE.cpu;
+      updateSetupModeUi();
+      let saved = "";
+      try { saved = localStorage.getItem("songen_player_name") || ""; } catch (error) {}
+      if (!dom.playerNameInput.value) dom.playerNameInput.value = saved;
+      showScreen("setup");
+    }
+
+    function updateSetupModeUi() {
+      const local = state.battleMode === BATTLE_MODE.local2p;
+      if (dom.setupModeTitle) dom.setupModeTitle.textContent = local ? "ローカル2人対戦の設定" : "CPU戦の設定";
+      if (dom.opponentHeadTitle) dom.opponentHeadTitle.textContent = local ? "P2頭選択" : "CPU頭選択";
+      if (dom.opponentNameTitle) dom.opponentNameTitle.textContent = local ? "P2名" : "CPU名";
+      if (dom.cpuNameInput) dom.cpuNameInput.placeholder = local ? "空欄ならP2" : "空欄ならランダム";
+    }
+
+    const mockSignalingAdapter = {
+      slots: Array.from({ length: ONLINE_LIMITS.maxSlots }, (_, index) => ({
+        slotId: index + 1,
+        status: "empty",
+        players: []
+      })),
+      async enterWithSharedPass(sharedPass, playerInfo) {
+        const pass = String(sharedPass || "").trim();
+        if (!pass) {
+          const error = new Error("共通パスを入力してください");
+          error.code = "NO_PASS";
+          throw error;
+        }
+        const slot = this.slots.find((item) => item.players.length < ONLINE_LIMITS.playersPerSlot);
+        if (!slot) {
+          const error = new Error("ただいまオンライン対戦の枠が満員です。少ししてからもう一度お試しください。");
+          error.code = "FULL";
+          throw error;
+        }
+        slot.players.push({
+          playerId: playerInfo.playerId,
+          name: playerInfo.name,
+          joinedAt: Date.now()
+        });
+        slot.status = slot.players.length >= ONLINE_LIMITS.playersPerSlot ? "full" : "waiting";
+        return JSON.parse(JSON.stringify(slot));
+      },
+      async leave(slotId, playerId) {
+        const slot = this.slots.find((item) => item.slotId === slotId);
+        if (!slot) return null;
+        slot.players = slot.players.filter((player) => player.playerId !== playerId);
+        slot.status = slot.players.length ? "waiting" : "empty";
+        return JSON.parse(JSON.stringify(slot));
+      },
+      async getSlots() {
+        return JSON.parse(JSON.stringify(this.slots));
+      }
+    };
+
+    const signalingAdapter = mockSignalingAdapter;
+
+    function getLocalPlayerId() {
+      try {
+        const key = "songen_local_player_id";
+        let id = localStorage.getItem(key);
+        if (!id) {
+          id = `local_${Date.now().toString(36)}_${Math.random().toString(36).slice(2, 8)}`;
+          localStorage.setItem(key, id);
+        }
+        return id;
+      } catch (error) {
+        return `local_${Date.now().toString(36)}`;
+      }
+    }
+
+    function showOnlineLobby() {
+      renderOnlineSlots();
+      if (dom.onlineStatus) {
+        dom.onlineStatus.textContent = "共通パスを入力してください";
+        dom.onlineStatus.className = "send-status";
+      }
+      showScreen("onlineLobby");
+    }
+
+    async function renderOnlineSlots() {
+      if (!dom.onlineSlotList) return;
+      const slots = await signalingAdapter.getSlots();
+      dom.onlineSlotList.innerHTML = "";
+      slots.forEach((slot) => {
+        const row = document.createElement("div");
+        row.className = "break-row";
+        const statusText = slot.status === "empty" ? "空き" : slot.status === "waiting" ? "待機中" : slot.status === "full" ? "満員" : slot.status;
+        row.innerHTML = `<span>slot_${slot.slotId}</span><strong>${statusText} ${slot.players.length}/${ONLINE_LIMITS.playersPerSlot}</strong>`;
+        dom.onlineSlotList.appendChild(row);
+      });
+    }
+
+    async function joinOnlineMockSlot() {
+      const pass = dom.onlinePassInput ? dom.onlinePassInput.value : "";
+      if (!String(pass || "").trim()) {
+        dom.onlineStatus.textContent = "共通パスを入力してください";
+        dom.onlineStatus.className = "send-status ng";
+        return;
+      }
+      const playerInfo = {
+        playerId: getLocalPlayerId() + "_" + Date.now().toString(36),
+        name: sanitizeName(dom.playerNameInput && dom.playerNameInput.value, "名無し", 12)
+      };
+      try {
+        const slot = await signalingAdapter.enterWithSharedPass(pass, playerInfo);
+        state.onlineSession = { slotId: slot.slotId, playerId: playerInfo.playerId };
+        dom.onlineStatus.textContent = `slot_${slot.slotId} に参加しました（${slot.players.length}/${ONLINE_LIMITS.playersPerSlot}）`;
+        dom.onlineStatus.className = "send-status ok";
+      } catch (error) {
+        dom.onlineStatus.textContent = error && error.message ? error.message : "参加できませんでした";
+        dom.onlineStatus.className = "send-status ng";
+      }
+      renderOnlineSlots();
+    }
+
+    function updateSideChoiceUi() {
+      document.querySelectorAll('input[name="playerSide"]').forEach((input) => {
+        const card = input.closest(".choice-card");
+        if (card) card.classList.toggle("selected", input.checked);
+      });
+    }
+
+    function bindSetupChoices() {
+      document.querySelectorAll('input[name="playerSide"]').forEach((input) => {
+        input.addEventListener("change", updateSideChoiceUi);
+      });
+      updateSideChoiceUi();
+    }
+
+    function preventGestureZoom() {
+      document.addEventListener("contextmenu", (event) => event.preventDefault());
+      document.addEventListener("selectstart", (event) => {
+        const tag = (event.target && event.target.tagName || "").toLowerCase();
+        if (tag !== "input" && tag !== "textarea") event.preventDefault();
+      });
+      document.addEventListener("dragstart", (event) => event.preventDefault());
+      document.addEventListener("gesturestart", (event) => event.preventDefault(), { passive: false });
+      document.addEventListener("gesturechange", (event) => event.preventDefault(), { passive: false });
+      document.addEventListener("gestureend", (event) => event.preventDefault(), { passive: false });
+      let lastTouchEnd = 0;
+      document.addEventListener("touchend", (event) => {
+        const interactive = event.target && event.target.closest && event.target.closest("button, input, textarea, label, select, a, .choice-card, .head-choice");
+        if (interactive) {
+          lastTouchEnd = Date.now();
+          return;
+        }
+
+        const t = Date.now();
+        if (t - lastTouchEnd <= 320) event.preventDefault();
+        lastTouchEnd = t;
+      }, { passive: false });
+    }
+    function init() {
+      initHeadGrid(dom.playerHeadGrid, "player");
+      initHeadGrid(dom.cpuHeadGrid, "cpu");
+      bindControls();
+      bindNavigation();
+      bindSetupChoices();
+      preventGestureZoom();
+      bindBrowserGestureGuard();
+      let saved = "";
+      try { saved = localStorage.getItem("songen_player_name") || ""; } catch (error) {}
+      dom.playerNameInput.value = saved;
+      window.addEventListener("resize", () => {
+        const rect = getStageRect();
+        if (state.player) state.player.x = clamp(state.player.x, 48, rect.width - 48);
+        if (state.cpu) state.cpu.x = clamp(state.cpu.x, 48, rect.width - 48);
+        keepFightersSeparated();
+        renderAll();
+      });
+    }
+
+    init();
+
+  </script>
 </body>
 </html>
