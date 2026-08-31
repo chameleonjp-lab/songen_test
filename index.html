@@ -791,6 +791,66 @@
     .send-status.ok { color: var(--good); }
     .send-status.ng { color: var(--danger); }
 
+    .result-share-text {
+      width: 100%;
+      min-height: 116px;
+      resize: vertical;
+      border: 1px solid var(--line);
+      border-radius: 16px;
+      padding: 10px 12px;
+      background: rgba(0, 0, 0, 0.2);
+      color: var(--text);
+      font: inherit;
+      font-size: 13px;
+      line-height: 1.55;
+      -webkit-user-select: text;
+      user-select: text;
+    }
+
+    .name-error {
+      min-height: 1.5em;
+      margin: 8px 0 0;
+      color: var(--danger);
+      font-size: 13px;
+    }
+
+    .result-ranking {
+      margin: 14px 0;
+      padding: 14px;
+      border: 1px solid var(--line);
+      border-radius: 16px;
+      background: rgba(0, 0, 0, 0.16);
+    }
+
+    .result-ranking h3 {
+      margin: 0 0 10px;
+      color: var(--accent);
+      text-align: center;
+      font-size: 16px;
+    }
+
+    .result-ranking-list {
+      display: grid;
+      gap: 7px;
+      margin: 0;
+      padding-left: 24px;
+    }
+
+    .result-ranking-list li {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) auto;
+      gap: 8px;
+      color: var(--text);
+      font-size: 13px;
+    }
+
+    .result-ranking-name {
+      min-width: 0;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
     .toast {
       position: absolute;
       z-index: 100;
@@ -1090,7 +1150,8 @@
         <div class="setup-grid">
           <label>
             <div class="section-title">プレイヤー名</div>
-            <input id="playerNameInput" type="text" maxlength="12" autocomplete="nickname" placeholder="名前を入力" />
+            <input id="playerNameInput" type="text" maxlength="12" autocomplete="nickname" placeholder="名前を入力" aria-describedby="playerNameError" />
+            <p id="playerNameError" class="name-error" role="alert" aria-live="polite"></p>
           </label>
 
           <div>
@@ -1229,10 +1290,16 @@
           <div class="break-row"><span>経過秒数</span><strong id="bdElapsed">0秒</strong></div>
         </div>
         <div id="sendStatus" class="send-status">ランキング送信中...</div>
+        <textarea id="resultShareText" class="result-share-text" readonly aria-label="結果のシェア文"></textarea>
+        <div id="resultRanking" class="result-ranking" aria-live="polite">
+          <h3>スコアランキング TOP10</h3>
+          <div id="resultRankingContent">ランキング読み込み中...</div>
+        </div>
         <div class="button-stack">
           <button id="retryBtn" class="primary">もう一度</button>
           <button id="resultShareBtn">結果をシェア</button>
-          <button id="resultLabBtn">ゲームを終了する</button>
+          <button id="resultLabBtn">ホームへ戻る</button>
+          <a class="result-lab-link" href="https://chameleonjp-lab.github.io/chameleonjp_lab/" target="_blank" rel="noopener noreferrer">カメレオンJPの実験場へ</a>
         </div>
       </div>
     </section>
@@ -1271,7 +1338,7 @@
     const GAME = Object.freeze({
       title: "尊厳を賭けようか",
       slug: "songen_wo_kakeyouka",
-      url: "https://codeberg.org/chameleonjp/songen_test",
+      url: "https://chameleonjp-lab.github.io/songen_test/",
       labUrl: "https://chameleonjp-lab.github.io/chameleonjp_lab/",
       durationSec: 180,
       version: "songen_test_online_roadmap_1_5_v20260615"
@@ -1352,6 +1419,7 @@ hitWidth: 46,
       toast: $("toast"),
       rulesModal: $("rulesModal"),
       playerNameInput: $("playerNameInput"),
+      playerNameError: $("playerNameError"),
       cpuNameInput: $("cpuNameInput"),
       setupModeTitle: $("setupModeTitle"),
       opponentHeadTitle: $("opponentHeadTitle"),
@@ -1393,6 +1461,8 @@ hitWidth: 46,
       bdPlayerBroken: $("bdPlayerBroken"),
       bdElapsed: $("bdElapsed"),
       sendStatus: $("sendStatus"),
+      resultShareText: $("resultShareText"),
+      resultRankingContent: $("resultRankingContent"),
       fighters: {
         player: {
           root: $("playerFighter"), name: $("playerFighterName"), headRow: $("playerHeadRow"), head: $("playerHeadPart"),
@@ -1605,7 +1675,13 @@ hitWidth: 46,
 
     function collectSettings() {
       const battleMode = state.battleMode || BATTLE_MODE.cpu;
-      const playerName = sanitizeName(dom.playerNameInput.value, "名無し", 12);
+      const playerName = sanitizeName(dom.playerNameInput.value, "", 12);
+      if (!playerName) {
+        if (dom.playerNameError) dom.playerNameError.textContent = "プレイヤー名を入力してください。";
+        dom.playerNameInput.focus();
+        return null;
+      }
+      if (dom.playerNameError) dom.playerNameError.textContent = "";
       try { localStorage.setItem("songen_player_name", playerName); } catch (error) {}
       const opponentFallback = battleMode === BATTLE_MODE.local2p ? "P2" : randItem(CPU_NAMES);
       const cpuName = sanitizeName(dom.cpuNameInput.value, opponentFallback, 10);
@@ -2766,8 +2842,55 @@ hitWidth: 46,
       dom.bdEnemyBroken.textContent = String(result.enemyPartsBroken);
       dom.bdPlayerBroken.textContent = String(result.playerPartsBroken);
       dom.bdElapsed.textContent = `${result.elapsedSec}秒`;
+      if (dom.resultShareText) dom.resultShareText.value = makeShareText(result);
       dom.sendStatus.textContent = "ランキング送信中...";
       dom.sendStatus.className = "send-status";
+    }
+
+    function renderResultRankingMessage(message) {
+      if (dom.resultRankingContent) dom.resultRankingContent.textContent = message;
+    }
+
+    function renderResultRanking(rows) {
+      if (!dom.resultRankingContent) return;
+      const list = Array.isArray(rows) ? rows.slice(0, 10) : [];
+      if (!list.length) {
+        renderResultRankingMessage("ランキングはまだありません");
+        return;
+      }
+      const ordered = document.createElement("ol");
+      ordered.className = "result-ranking-list";
+      list.forEach((row, index) => {
+        const item = document.createElement("li");
+        const name = document.createElement("span");
+        name.className = "result-ranking-name";
+        name.textContent = row.display_name || row.player_name || row.name || "名無し";
+        const score = document.createElement("strong");
+        score.textContent = `${Math.trunc(Number(row.score ?? row.best_score ?? 0))}点`;
+        item.value = Number(row.rank_no ?? row.rank ?? index + 1);
+        item.append(name, score);
+        ordered.appendChild(item);
+      });
+      dom.resultRankingContent.replaceChildren(ordered);
+    }
+
+    async function fetchResultRanking() {
+      if (!supabaseConfigured()) throw new Error("Supabase is not configured");
+      const key = getSupabasePublishableKey();
+      const endpoint = `${SUPABASE_URL.replace(/\/$/, "")}/rest/v1/rpc/get_best_score_ranking`;
+      const response = await fetch(endpoint, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          apikey: key,
+          Authorization: `Bearer ${key}`
+        },
+        body: JSON.stringify({ p_game_slug: GAME.slug, p_limit: 10 })
+      });
+      const text = await response.text().catch(() => "");
+      if (!response.ok) throw new Error(sanitizeSubmitError(text || `HTTP ${response.status}`));
+      const parsed = safeParseJson(text);
+      return Array.isArray(parsed) ? parsed.slice(0, 10) : [];
     }
 
     
@@ -2776,23 +2899,27 @@ hitWidth: 46,
       if (result && result.battleMode === BATTLE_MODE.local2p) {
         dom.sendStatus.textContent = "ローカル2人対戦のため、ランキング送信は行いません";
         dom.sendStatus.className = "send-status";
-        return;
-      }
-      if (!supabaseConfigured()) {
+      } else if (!supabaseConfigured()) {
         dom.sendStatus.textContent = "ランキング連携：Publishable key設定後に有効になります";
         dom.sendStatus.className = "send-status";
-        return;
+      } else {
+        try {
+          await submitScore(result.playerName, result.score);
+          dom.sendStatus.textContent = "ランキング登録しました";
+          dom.sendStatus.className = "send-status ok";
+        } catch (error) {
+          const message = error && error.message ? String(error.message).slice(0, 90) : "詳細不明";
+          dom.sendStatus.textContent = "ランキング登録に失敗しました：" + message;
+          dom.sendStatus.className = "send-status ng";
+          console.warn("score submit failed", error);
+        }
       }
 
       try {
-        await submitScore(result.playerName, result.score);
-        dom.sendStatus.textContent = "ランキング登録しました";
-        dom.sendStatus.className = "send-status ok";
+        renderResultRanking(await fetchResultRanking());
       } catch (error) {
-        const message = error && error.message ? String(error.message).slice(0, 90) : "詳細不明";
-        dom.sendStatus.textContent = "ランキング登録に失敗しました：" + message;
-        dom.sendStatus.className = "send-status ng";
-        console.warn("score submit failed", error);
+        renderResultRankingMessage("ランキングを読み込めませんでした");
+        console.warn("ranking fetch failed", error);
       }
     }
 function getSupabasePublishableKey() {
@@ -3228,7 +3355,10 @@ function getSupabasePublishableKey() {
       bindTapButton(dom.buttons.setupBack, () => showScreen("home"));
       bindTapButton(dom.buttons.onlineBack, () => showScreen("home"));
       bindTapButton(dom.buttons.onlineJoin, joinOnlineMockSlot);
-      bindTapButton(dom.buttons.setupStart, () => setupBattle(collectSettings()));
+      bindTapButton(dom.buttons.setupStart, () => {
+        const settings = collectSettings();
+        if (settings) setupBattle(settings);
+      });
       bindTapButton(dom.buttons.retire, retireBattle);
       bindTapButton(dom.buttons.homeShare, () => shareText(`${GAME.title}　で遊ぼう！\n${GAME.url}`));
       bindTapButton(dom.buttons.homeLab, () => { location.href = GAME.labUrl; });
@@ -3356,9 +3486,16 @@ function getSupabasePublishableKey() {
         dom.onlineStatus.className = "send-status ng";
         return;
       }
+      const playerName = sanitizeName(dom.playerNameInput && dom.playerNameInput.value, "", 12);
+      if (!playerName) {
+        if (dom.playerNameError) dom.playerNameError.textContent = "プレイヤー名を入力してください。";
+        showScreen("setup");
+        dom.playerNameInput.focus();
+        return;
+      }
       const playerInfo = {
         playerId: getLocalPlayerId() + "_" + Date.now().toString(36),
-        name: sanitizeName(dom.playerNameInput && dom.playerNameInput.value, "名無し", 12)
+        name: playerName
       };
       try {
         const slot = await signalingAdapter.enterWithSharedPass(pass, playerInfo);
