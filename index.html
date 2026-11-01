@@ -27,7 +27,7 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover" />
   <meta name="format-detection" content="telephone=no" />
-  <title>尊厳を賭けようか</title>
+  <title data-i18n="m001">尊厳を賭けようか</title>
   <style>
     :root {
       --bg: #101218;
@@ -1106,101 +1106,114 @@
       transform: translateY(-22px) !important;
     }
 
-</style>
+    .x-share { background:#000!important; color:#fff!important; white-space:normal; overflow-wrap:anywhere; }
+    .ranking-link { display:block; padding:12px; min-height:44px; text-align:center; }
+    button,input,select { min-height:44px; } input { font-size:16px; }
+    .card { padding-bottom:max(20px,env(safe-area-inset-bottom)); }
+    .result-ranking-name { overflow-wrap:anywhere; }
+  </style>
 </head>
 <body>
   <div id="app" class="app">
-    <section id="homeScreen" class="screen active" aria-label="ホーム画面">
+    <section id="homeScreen" class="screen active" aria-label="ホーム画面" data-i18n-aria-label="m059">
       <div class="card">
         <div class="heart-logo">🫀</div>
-        <h1 class="title">尊厳を<br />賭けようか</h1>
-        <p class="subtitle">相手の頭を！心臓を！拳で殴って尊厳破壊！</p>
+        <h1 class="title" data-i18n="m001">尊厳を賭けようか</h1>
+        <p class="subtitle" data-i18n="m002">相手の頭を！心臓を！拳で殴って尊厳破壊！</p>
         <div class="button-stack">
-          <button id="homeCpuBtn" class="primary">CPU戦</button>
-          <button id="homeLocal2pBtn">ローカル2人対戦</button>
-          <button id="homeOnlineBtn">オンライン対戦β</button>
-          <button id="homeShareBtn">ゲームをシェア</button>
-          <button id="homeRulesBtn">ルール説明</button>
-          <button id="homeLabBtn">他のゲームで遊ぶ</button>
+          <label>
+            <div class="section-title" data-i18n="m003">プレイヤー名</div>
+            <input id="playerNameInput" type="text" maxlength="12" autocomplete="nickname" placeholder="名前を入力" data-i18n-placeholder="m060" aria-describedby="nameDisclosure playerNameError" />
+            <p id="nameDisclosure" class="note-text" data-i18n="m004">名前を入力すると、名前と記録がランキングに公開されます。空欄でも遊べます。</p>
+            <p id="playerNameError" class="name-error" role="alert" aria-live="polite"></p>
+          </label>
+          <div class="common-settings">
+<label><span data-i18n="m114">言語</span><select id="languageSelect"></select></label>
+<button id="soundToggle" type="button"></button>
+<label><span data-i18n="m116">音量</span><input id="soundVolume" type="range" min="0" max="1" step="0.05"></label>
+</div>
+<button id="homeCpuBtn" class="primary" data-i18n="m005">CPU戦</button>
+          <button id="homeLocal2pBtn" data-i18n="m006">ローカル2人対戦</button>
+          <button id="homeOnlineBtn" data-i18n="m007">オンライン対戦β</button>
+          <button id="homeShareBtn" class="x-share" data-i18n="m008">Xでシェア</button>
+          <a class="result-lab-link ranking-link" href="https://chameleonjp-lab.github.io/chameleonjp_lab/ranking.html?game=songen_wo_kakeyouka" target="_blank" rel="noopener noreferrer" data-i18n="m009">ランキング</a>
+          <button id="homeRulesBtn" data-i18n="m010">ルール説明</button>
+          <button id="homeLabBtn" data-i18n="m011">他のゲームで遊ぶ</button>
         </div>
       </div>
     </section>
 
     <div id="rulesModal" class="modal-backdrop" aria-hidden="true">
       <div class="modal-card" role="dialog" aria-modal="true" aria-labelledby="rulesModalTitle">
-        <h2 id="rulesModalTitle" class="section-title">ルール</h2>
+        <h2 id="rulesModalTitle" class="section-title" data-i18n="m012">ルール</h2>
         <ul class="rule-list">
-          <li>相手の🫀を🤜で殴れば勝利</li>
-          <li>攻撃🤜とガード💪はスタミナを消費する</li>
-          <li>スタミナは一定時間で回復</li>
-          <li>🤜には射程距離がある</li>
-          <li>頭は3回、💪🦵は2回攻撃で壊れる</li>
-          <li>ガードには💪が必要</li>
-          <li>ジャンプには🦵が必要</li>
+          <li data-i18n="m013">相手の🫀を🤜で殴れば勝利</li>
+          <li data-i18n="m014">攻撃🤜とガード💪はスタミナを消費する</li>
+          <li data-i18n="m015">スタミナは一定時間で回復</li>
+          <li data-i18n="m016">🤜には射程距離がある</li>
+          <li data-i18n="m017">頭は3回、💪🦵は2回攻撃で壊れる</li>
+          <li data-i18n="m018">ガードには💪が必要</li>
+          <li data-i18n="m019">ジャンプには🦵が必要</li>
         </ul>
         <div class="button-stack">
-          <button id="rulesCloseBtn" class="primary">閉じる</button>
+          <button id="rulesCloseBtn" class="primary" data-i18n="m020">閉じる</button>
         </div>
       </div>
     </div>
 
-    <section id="setupScreen" class="screen" aria-label="ゲーム開始前設定">
+    <section id="setupScreen" class="screen" aria-label="ゲーム開始前設定" data-i18n-aria-label="m061">
       <div class="card">
-        <h2 id="setupModeTitle" class="section-title">試合前の設定</h2>
+        <h2 id="setupModeTitle" class="section-title" data-i18n="m021">試合前の設定</h2>
         <div class="setup-grid">
-          <label>
-            <div class="section-title">プレイヤー名</div>
-            <input id="playerNameInput" type="text" maxlength="12" autocomplete="nickname" placeholder="名前を入力" aria-describedby="playerNameError" />
-            <p id="playerNameError" class="name-error" role="alert" aria-live="polite"></p>
-          </label>
+
 
           <div>
-            <div class="section-title">プレイヤー頭選択</div>
+            <div class="section-title" data-i18n="m022">プレイヤー頭選択</div>
             <div id="playerHeadGrid" class="head-grid"></div>
-            <p class="note-text">未選択ならランダムです。羽🪽は常に付きます。</p>
+            <p class="note-text" data-i18n="m023">未選択ならランダムです。羽🪽は常に付きます。</p>
           </div>
 
           <div>
-            <div id="opponentHeadTitle" class="section-title">CPU頭選択</div>
+            <div id="opponentHeadTitle" class="section-title" data-i18n="m024">CPU頭選択</div>
             <div id="cpuHeadGrid" class="head-grid"></div>
           </div>
 
           <label>
-            <div id="opponentNameTitle" class="section-title">CPU名</div>
-            <input id="cpuNameInput" type="text" maxlength="10" placeholder="空欄ならランダム" />
+            <div id="opponentNameTitle" class="section-title" data-i18n="m025">CPU名</div>
+            <input id="cpuNameInput" type="text" maxlength="10" placeholder="空欄ならランダム" data-i18n-placeholder="m062" />
           </label>
 
           <div>
-            <div class="section-title">プレイヤーの位置</div>
+            <div class="section-title" data-i18n="m026">プレイヤーの位置</div>
             <div class="radio-row">
-              <label class="choice-card selected"><input type="radio" name="playerSide" value="left" checked /><span>プレイヤー<br>左側</span></label>
-              <label class="choice-card"><input type="radio" name="playerSide" value="right" /><span>プレイヤー<br>右側</span></label>
+              <label class="choice-card selected"><input type="radio" name="playerSide" value="left" checked /><span data-i18n="m119">プレイヤー 左側</span></label>
+              <label class="choice-card"><input type="radio" name="playerSide" value="right" /><span data-i18n="m120">プレイヤー 右側</span></label>
             </div>
           </div>
         </div>
         <div class="button-stack">
-          <button id="setupStartBtn" class="primary">戦闘開始</button>
-          <button id="setupBackBtn">ホームへ戻る</button>
+          <button id="setupStartBtn" class="primary" data-i18n="m027">戦闘開始</button>
+          <button id="setupBackBtn" data-i18n="m028">ホームへ戻る</button>
         </div>
       </div>
     </section>
 
-    <section id="battleScreen" class="screen battle-screen" aria-label="戦闘画面">
+    <section id="battleScreen" class="screen battle-screen" aria-label="戦闘画面" data-i18n-aria-label="m063">
       <div class="hud">
-        <div class="hud-box"><span class="hud-label">TIME</span><span id="timeValue" class="hud-value">180</span></div>
-        <div class="hud-box"><span class="hud-label">SCORE</span><span id="scoreValue" class="hud-value">0点</span></div>
+        <div class="hud-box"><span class="hud-label" data-i18n="m125">TIME</span><span id="timeValue" class="hud-value">180</span></div>
+        <div class="hud-box"><span class="hud-label" data-i18n="m126">SCORE</span><span id="scoreValue" class="hud-value" data-i18n="m029" data-dynamic="true">0点</span></div>
       </div>
-      <button id="retireBtn" class="retire-btn" type="button">リタイア</button>
-      <div class="stamina-panel" aria-label="プレイヤースタミナ">
-        <span class="hud-label">プレイヤー STAMINA</span>
+      <button id="retireBtn" class="retire-btn" type="button" data-i18n="m030">リタイア</button>
+      <div class="stamina-panel" aria-label="プレイヤースタミナ" data-i18n-aria-label="m064">
+        <span class="hud-label" data-i18n="m031">プレイヤー STAMINA</span>
         <span id="staminaValue" class="hud-value">5.0</span>
         <span id="staminaBar" class="stamina-line">■■■■■</span>
       </div>
       <div id="stage" class="stage">
         <div class="ground"></div>
         <div id="playerFighter" class="fighter" data-role="プレイヤー">
-          <div id="playerFighterName" class="fighter-name">プレイヤー</div>
-          <div id="playerHeadRow" class="body-grid" aria-label="プレイヤーパーツ配置 1空白 2頭 3羽 4左腕 5心臓 6右腕 7空白 8左足 9右足">
+          <div id="playerFighterName" class="fighter-name" data-i18n="m032">プレイヤー</div>
+          <div id="playerHeadRow" class="body-grid" aria-label="プレイヤーパーツ配置 1空白 2頭 3羽 4左腕 5心臓 6右腕 7空白 8左足 9右足" data-i18n-aria-label="m065">
             <!-- 1=空白 / 2=頭 / 3=🪽 / 4=💪 / 5=🫀 / 6=💪 / 7=空白 / 8=🦵 / 9=🦵 -->
             <span class="part part-spacer" data-cell="1" aria-hidden="true">　</span><span id="playerHeadPart" class="part head-part" data-cell="2">𓅿</span><span class="part wing-part" data-cell="3">🪽</span>
             <span id="playerLeftArm" class="part" data-cell="4">💪</span><span id="playerHeart" class="part heart-part" data-cell="5">🫀</span><span id="playerRightArm" class="part" data-cell="6">💪</span>
@@ -1210,7 +1223,7 @@
         </div>
         <div id="cpuFighter" class="fighter" data-role="CPU">
           <div id="cpuFighterName" class="fighter-name">CPU</div>
-          <div id="cpuHeadRow" class="body-grid" aria-label="CPUパーツ配置 1空白 2頭 3羽 4左腕 5心臓 6右腕 7空白 8左足 9右足">
+          <div id="cpuHeadRow" class="body-grid" aria-label="CPUパーツ配置 1空白 2頭 3羽 4左腕 5心臓 6右腕 7空白 8左足 9右足" data-i18n-aria-label="m066">
             <!-- 1=空白 / 2=頭 / 3=🪽 / 4=💪 / 5=🫀 / 6=💪 / 7=空白 / 8=🦵 / 9=🦵 -->
             <span class="part part-spacer" data-cell="1" aria-hidden="true">　</span><span id="cpuHeadPart" class="part head-part" data-cell="2">𓅿</span><span class="part wing-part" data-cell="3">🪽</span>
             <span id="cpuLeftArm" class="part" data-cell="4">💪</span><span id="cpuHeart" class="part heart-part" data-cell="5">🫀</span><span id="cpuRightArm" class="part" data-cell="6">💪</span>
@@ -1219,35 +1232,35 @@
           <div id="cpuGuardMark" class="guard-mark">💪</div>
         </div>
       </div>
-      <div id="countdown" class="countdown">3</div>
-      <div class="controls" aria-label="操作ボタン">
+      <div id="countdown" class="countdown" data-dynamic="true">3</div>
+      <div class="controls" aria-label="操作ボタン" data-i18n-aria-label="m067">
         <div class="move-pad">
           <button id="leftBtn" class="control-btn">←</button>
           <button id="rightBtn" class="control-btn">→</button>
-          <button id="jumpBtn" class="control-btn" aria-label="ジャンプ">↑</button>
-          <button id="crouchBtn" class="control-btn" aria-label="しゃがみ">↓</button>
+          <button id="jumpBtn" class="control-btn" aria-label="ジャンプ" data-i18n-aria-label="m068">↑</button>
+          <button id="crouchBtn" class="control-btn" aria-label="しゃがみ" data-i18n-aria-label="m069">↓</button>
         </div>
         <div class="action-pad">
-          <button id="attackBtn" class="control-btn action-btn">攻撃A</button>
-          <button id="guardBtn" class="control-btn guard-btn">ガードB</button>
+          <button id="attackBtn" class="control-btn action-btn" data-i18n="m033">攻撃A</button>
+          <button id="guardBtn" class="control-btn guard-btn" data-i18n="m034">ガードB</button>
         </div>
       </div>
     </section>
 
 
-    <section id="outcomeScreen" class="screen" aria-label="決着画面">
+    <section id="outcomeScreen" class="screen" aria-label="決着画面" data-i18n-aria-label="m070">
       <div class="card outcome-card">
         <div class="outcome-top">
-          <div class="outcome-finish">終了</div>
-          <div id="outcomeStatus" class="outcome-status">勝利</div>
-          <div id="outcomeMessage" class="outcome-message">尊厳を破壊した</div>
+          <div class="outcome-finish" data-i18n="m035">終了</div>
+          <div id="outcomeStatus" class="outcome-status" data-i18n="m036" data-dynamic="true">勝利</div>
+          <div id="outcomeMessage" class="outcome-message" data-i18n="m037" data-dynamic="true">尊厳を破壊した</div>
         </div>
 
-        <div class="outcome-shot" aria-label="決着時の2人">
+        <div class="outcome-shot" aria-label="決着時の2人" data-i18n-aria-label="m071">
           <div class="outcome-duo">
             <div id="outcomePlayerCard" class="outcome-fighter-card">
-              <div id="outcomePlayerName" class="outcome-name">プレイヤー</div>
-              <div class="body-grid" aria-label="プレイヤーの決着時の姿">
+              <div id="outcomePlayerName" class="outcome-name" data-i18n="m032">プレイヤー</div>
+              <div class="body-grid" aria-label="プレイヤーの決着時の姿" data-i18n-aria-label="m072">
                 <span class="part part-spacer" aria-hidden="true">　</span><span id="outcomePlayerHead" class="part head-part">𓅿</span><span class="part wing-part">🪽</span>
                 <span id="outcomePlayerLeftArm" class="part">💪</span><span class="part heart-part">🫀</span><span id="outcomePlayerRightArm" class="part">💪</span>
                 <span class="part part-spacer" aria-hidden="true">　</span><span id="outcomePlayerLeftFoot" class="part">🦵</span><span id="outcomePlayerRightFoot" class="part">🦵</span>
@@ -1258,7 +1271,7 @@
 
             <div id="outcomeCpuCard" class="outcome-fighter-card">
               <div id="outcomeCpuName" class="outcome-name">CPU</div>
-              <div class="body-grid" aria-label="CPUの決着時の姿">
+              <div class="body-grid" aria-label="CPUの決着時の姿" data-i18n-aria-label="m073">
                 <span class="part part-spacer" aria-hidden="true">　</span><span id="outcomeCpuHead" class="part head-part">𓅿</span><span class="part wing-part">🪽</span>
                 <span id="outcomeCpuLeftArm" class="part">💪</span><span class="part heart-part">🫀</span><span id="outcomeCpuRightArm" class="part">💪</span>
                 <span class="part part-spacer" aria-hidden="true">　</span><span id="outcomeCpuLeftFoot" class="part">🦵</span><span id="outcomeCpuRightFoot" class="part">🦵</span>
@@ -1268,63 +1281,73 @@
         </div>
 
         <div>
-          <div id="outcomeScore" class="outcome-score">スコア：0点</div>
+          <div id="outcomeScore" class="outcome-score" data-i18n="m038" data-dynamic="true">スコア：0点</div>
         </div>
 
         <div class="outcome-bottom">
-          <button id="outcomeResultBtn" class="primary" type="button">結果を見る</button>
+          <button id="outcomeResultBtn" class="primary" type="button" data-i18n="m039">結果を見る</button>
         </div>
       </div>
     </section>
 
-    <section id="resultScreen" class="screen" aria-label="結果画面">
+    <section id="resultScreen" class="screen" aria-label="結果画面" data-i18n-aria-label="m074">
       <div class="card">
-        <div id="resultMain" class="result-main">結果</div>
-        <div id="resultSub" class="result-sub">尊厳は保たれた</div>
-        <div id="scoreBig" class="score-big">0点</div>
+        <div id="resultMain" class="result-main" data-i18n="m040" data-dynamic="true">結果</div>
+        <div id="resultSub" class="result-sub" data-i18n="m041" data-dynamic="true">尊厳は保たれた</div>
+        <div id="scoreBig" class="score-big" data-i18n="m029" data-dynamic="true">0点</div>
         <div class="breakdown">
-          <div class="break-row"><span>飛ばした攻撃数</span><strong id="bdAttacks">0</strong></div>
-          <div class="break-row"><span>ガード成功数</span><strong id="bdGuards">0</strong></div>
-          <div class="break-row"><span>壊した相手パーツ数</span><strong id="bdEnemyBroken">0</strong></div>
-          <div class="break-row"><span>壊された自分パーツ数</span><strong id="bdPlayerBroken">0</strong></div>
-          <div class="break-row"><span>経過秒数</span><strong id="bdElapsed">0秒</strong></div>
+          <div class="break-row"><span data-i18n="m042">飛ばした攻撃数</span><strong id="bdAttacks">0</strong></div>
+          <div class="break-row"><span data-i18n="m043">ガード成功数</span><strong id="bdGuards">0</strong></div>
+          <div class="break-row"><span data-i18n="m044">壊した相手パーツ数</span><strong id="bdEnemyBroken">0</strong></div>
+          <div class="break-row"><span data-i18n="m045">壊された自分パーツ数</span><strong id="bdPlayerBroken">0</strong></div>
+          <div class="break-row"><span data-i18n="m046">経過秒数</span><strong id="bdElapsed" data-i18n="m047" data-dynamic="true">0秒</strong></div>
         </div>
-        <div id="sendStatus" class="send-status">ランキング送信中...</div>
-        <textarea id="resultShareText" class="result-share-text" readonly aria-label="結果のシェア文"></textarea>
+        <div id="sendStatus" class="send-status" data-i18n="m048" data-dynamic="true">ランキング送信中...</div>
+        <textarea id="resultShareText" class="result-share-text" readonly aria-label="結果のシェア文" data-i18n-aria-label="m075"></textarea>
         <div id="resultRanking" class="result-ranking" aria-live="polite">
-          <h3>スコアランキング TOP10</h3>
-          <div id="resultRankingContent">ランキング読み込み中...</div>
+          <h3 data-i18n="m049">スコアランキング TOP30</h3>
+          <div id="resultRankingContent" data-i18n="m050" data-dynamic="true">ランキング読み込み中...</div>
+          <button id="rankingRetryBtn" type="button" data-i18n="m051">再読み込み</button>
+          <button id="submissionRetryBtn" type="button" hidden data-i18n="m052">未送信の記録を再送</button>
         </div>
         <div class="button-stack">
-          <button id="retryBtn" class="primary">もう一度</button>
-          <button id="resultShareBtn">結果をシェア</button>
-          <button id="resultLabBtn">ホームへ戻る</button>
-          <a class="result-lab-link" href="https://chameleonjp-lab.github.io/chameleonjp_lab/" target="_blank" rel="noopener noreferrer">カメレオンJPの実験場へ</a>
+          <button id="retryBtn" class="primary" data-i18n="m053">もう一度</button>
+          <button id="resultShareBtn" class="x-share" data-i18n="m008">Xでシェア</button>
+          <a class="result-lab-link ranking-link" href="https://chameleonjp-lab.github.io/chameleonjp_lab/ranking.html?game=songen_wo_kakeyouka" target="_blank" rel="noopener noreferrer" data-i18n="m009">ランキング</a>
+          <button id="resultLabBtn" data-i18n="m028">ホームへ戻る</button>
+          <a class="result-lab-link" href="https://chameleonjp-lab.github.io/chameleonjp_lab/" target="_blank" rel="noopener noreferrer" data-i18n="m054">カメレオンJPの実験場へ</a>
         </div>
       </div>
     </section>
 
-    <section id="onlineLobbyScreen" class="screen" aria-label="オンライン対戦β">
+    <section id="onlineLobbyScreen" class="screen" aria-label="オンライン対戦β" data-i18n-aria-label="m007">
       <div class="card">
-        <h2 class="section-title">オンライン対戦β</h2>
-        <p class="note-text">オンライン対戦は準備中のβ機能です。現在は接続テスト用の待ち合わせ画面のみ実装しています。</p>
+        <h2 class="section-title" data-i18n="m007">オンライン対戦β</h2>
+        <p class="note-text" data-i18n="m055">オンライン対戦は準備中のβ機能です。現在は接続テスト用の待ち合わせ画面のみ実装しています。</p>
         <label>
-          <div class="section-title">共通パス</div>
-          <input id="onlinePassInput" type="password" maxlength="32" autocomplete="off" placeholder="共通パスを入力" />
+          <div class="section-title" data-i18n="m056">共通パス</div>
+          <input id="onlinePassInput" type="password" maxlength="32" autocomplete="off" placeholder="共通パスを入力" data-i18n-placeholder="m076" />
         </label>
-        <div id="onlineStatus" class="send-status">共通パスを入力してください</div>
-        <div id="onlineSlotList" class="breakdown" aria-label="対戦枠の状態"></div>
+        <div id="onlineStatus" class="send-status" data-i18n="m057" data-dynamic="true">共通パスを入力してください</div>
+        <div id="onlineSlotList" class="breakdown" aria-label="対戦枠の状態" data-i18n-aria-label="m077"></div>
         <div class="button-stack">
-          <button id="onlineJoinBtn" class="primary">参加する</button>
-          <button id="onlineBackBtn">ホームへ戻る</button>
+          <button id="onlineJoinBtn" class="primary" data-i18n="m058">参加する</button>
+          <button id="onlineBackBtn" data-i18n="m028">ホームへ戻る</button>
         </div>
       </div>
     </section>
 
+    <div id="shareFallback" class="card" hidden><textarea id="shareFallbackText" readonly aria-label="共有文" data-i18n-aria-label="m075"></textarea><button id="copyShareBtn" type="button" data-i18n="m122">共有文をコピー</button><button id="closeShareBtn" type="button" data-i18n="m020">閉じる</button></div>
     <div id="toast" class="toast" role="status" aria-live="polite"></div>
   </div>
 
+  <script src="js/messages.js"></script>
+  <script src="js/i18n.js"></script>
+  <script src="js/audio.js"></script>
+  <script src="js/participation.js"></script>
   <script>
+    const t = (...args) => SongenI18n.t(...args);
+
 "use strict";
 
     /******************************************************************
@@ -1338,7 +1361,7 @@
     const GAME = Object.freeze({
       title: "尊厳を賭けようか",
       slug: "songen_wo_kakeyouka",
-      url: "https://chameleonjp-lab.github.io/songen_test/",
+      url: "https://chameleonjp.codeberg.page/songen_wo_kakeyouka/",
       labUrl: "https://chameleonjp-lab.github.io/chameleonjp_lab/",
       durationSec: 180,
       version: "songen_test_online_roadmap_1_5_v20260615"
@@ -1371,10 +1394,10 @@ hitWidth: 46,
     });
 
     const RESULT_TEXT = Object.freeze({
-      win: { label: "勝利" },
-      loss: { label: "敗北" },
-      retire: { label: "リタイア" },
-      draw: { label: "引き分け" }
+      win: { label: "m036" },
+      loss: { label: "m112" },
+      retire: { label: "m030" },
+      draw: { label: "m113" }
     });
 
     const BATTLE_MODE = Object.freeze({
@@ -1396,11 +1419,11 @@ hitWidth: 46,
 
     function makeOutcomePhrase(outcome, cpuName, playerName) {
       const enemy = sanitizeName(cpuName, "CPU", 10);
-      const self = sanitizeName(playerName, "プレイヤー", 12);
-      if (outcome === "win") return `${enemy}の尊厳を破壊した`;
-      if (outcome === "loss") return `${enemy}に${self}の尊厳を破壊された`;
-      if (outcome === "retire") return `${enemy}に${self}の尊厳を差し出した`;
-      return `${enemy}との尊厳は保たれた`;
+      const self = sanitizeName(playerName, t("m032"), 12);
+      if (outcome === "win") return t("m078", {p0: enemy});
+      if (outcome === "loss") return t("m079", {p0: enemy, p1: self});
+      if (outcome === "retire") return t("m080", {p0: enemy, p1: self});
+      return t("m081", {p0: enemy});
     }
 
     const $ = (id) => document.getElementById(id);
@@ -1489,6 +1512,11 @@ hitWidth: 46,
     let selectedPlayerHead = "";
     let selectedCpuHead = "";
     let lastSettings = null;
+    let activePlay = null;
+    let lastWarningSecond = null;
+    let composingName = false;
+    let rankingRequest = 0;
+    const submissionsInFlight = new Set();
     let lastResult = null;
     let toastTimer = null;
 
@@ -1623,26 +1651,17 @@ hitWidth: 46,
 
     function makeShareText(result) {
       const info = RESULT_TEXT[result.outcome] || RESULT_TEXT.draw;
-      const phrase = makeOutcomePhrase(result.outcome, result.cpuName, result.playerName);
-      return `${GAME.title}　で遊んだ！\n結果：${info.label}\n${phrase}\nスコア：${result.score}点\n${GAME.url}`;
+      const mode = result.battleMode === BATTLE_MODE.local2p ? t("m006") : t("m005");
+      return t("m082", {p0: GAME.title, p1: mode, p2: t(info.label), p3: result.score, p4: GAME.url});
     }
 
     async function shareText(text) {
-      try {
-        if (navigator.share) {
-          await navigator.share({ text });
-          return;
-        }
-        await navigator.clipboard.writeText(text);
-        showToast("シェア文をコピーしました");
-      } catch (error) {
-        try {
-          await navigator.clipboard.writeText(text);
-          showToast("シェア文をコピーしました");
-        } catch (copyError) {
-          showToast("コピーできませんでした");
-        }
-      }
+      $('shareFallback').hidden=false; $('shareFallbackText').value=text;
+      try { window.open(`https://twitter.com/intent/tweet?text=${encodeURIComponent(text)}`, '_blank', 'noopener,noreferrer'); } catch (_) {}
+      // Always expose a copy fallback: noopener browsers may return null even on success.
+      if (dom.resultShareText) { dom.resultShareText.value = text; dom.resultShareText.hidden = false; }
+      try { await navigator.clipboard.writeText(text); showToast(t("m083")); }
+      catch (_) { showToast(t("m084")); }
     }
 
     function initHeadGrid(root, type) {
@@ -1668,6 +1687,7 @@ hitWidth: 46,
         if (!btn) return;
         root.querySelectorAll("button").forEach((b) => b.classList.remove("selected"));
         btn.classList.add("selected");
+        SongenAudio.play("select");
         if (type === "player") selectedPlayerHead = btn.dataset.value || "";
         if (type === "cpu") selectedCpuHead = btn.dataset.value || "";
       });
@@ -1676,11 +1696,7 @@ hitWidth: 46,
     function collectSettings() {
       const battleMode = state.battleMode || BATTLE_MODE.cpu;
       const playerName = sanitizeName(dom.playerNameInput.value, "", 12);
-      if (!playerName) {
-        if (dom.playerNameError) dom.playerNameError.textContent = "プレイヤー名を入力してください。";
-        dom.playerNameInput.focus();
-        return null;
-      }
+      if (composingName) return null;
       if (dom.playerNameError) dom.playerNameError.textContent = "";
       try { localStorage.setItem("songen_player_name", playerName); } catch (error) {}
       const opponentFallback = battleMode === BATTLE_MODE.local2p ? "P2" : randItem(CPU_NAMES);
@@ -1730,6 +1746,11 @@ hitWidth: 46,
     }
 
     function setupBattle(settings) {
+      SongenAudio.unlock();
+      SongenAudio.play("start");
+      activePlay = SongenParticipation.begin(settings.playerName, settings.battleMode || BATTLE_MODE.cpu, () => crypto.randomUUID());
+      rankingRequest++;
+      lastWarningSecond = null;
       cancelAnimationFrame(state.rafId);
       clearInterval(state.countdownTimer);
       state.running = false;
@@ -1751,7 +1772,7 @@ hitWidth: 46,
       lastSettings = settings;
 
       showScreen("battle");
-      dom.countdown.textContent = "準備";
+      dom.countdown.textContent = t("m085");
       dom.countdown.classList.add("active");
 
       requestAnimationFrame(() => {
@@ -1770,7 +1791,7 @@ hitWidth: 46,
       state.playerOnLeft = settings.playerSide === "left";
       const playerX = state.playerOnLeft ? leftX : rightX;
       const cpuX = state.playerOnLeft ? rightX : leftX;
-      state.player = createFighter("player", settings.playerName, settings.playerHead, playerX);
+      state.player = createFighter("player", settings.playerName || t("m032"), settings.playerHead, playerX);
       state.cpu = createFighter("cpu", settings.cpuName, settings.cpuHead, cpuX);
       state.stats = {
         attacks: 0,
@@ -1791,7 +1812,7 @@ hitWidth: 46,
     function beginCountdown() {
       enableGameplayBrowserGuard();
       clearInterval(state.countdownTimer);
-      const steps = ["3", "2", "1", "開始"];
+      const steps = ["3", "2", "1", t("m086")];
       let index = 0;
       dom.countdown.textContent = steps[index];
       dom.countdown.classList.add("active");
@@ -2059,6 +2080,7 @@ hitWidth: 46,
       if (!canJump(fighter) || isJumping(fighter)) return false;
       fighter.crouch = false;
       fighter.jumpUntil = timestamp + LIMITS.jumpMs;
+      SongenAudio.play("select");
       return true;
     }
 
@@ -2076,6 +2098,7 @@ hitWidth: 46,
     }
     function doAttack(fighter, timestamp) {
       if (!canAttack(fighter, timestamp)) return false;
+      SongenAudio.play("attack");
       const target = fighter.id === "player" ? state.cpu : state.player;
       const dir = target.x > fighter.x ? 1 : -1;
       const height = attackHeightFor(fighter);
@@ -2389,6 +2412,7 @@ hitWidth: 46,
     }
 
     function consumeGuardSuccess(target) {
+      SongenAudio.play("guard");
       target.stamina = Math.max(0, target.stamina - 0.5);
       if (target.id === "player") {
         state.stats.guardSuccess += 1;
@@ -2520,12 +2544,14 @@ hitWidth: 46,
       }
 
       data.damage += 1;
+      SongenAudio.play("hit");
       flashFighter(target.id);
       target.hitInvulnerableUntil = getBattleNowMs() + LIMITS.hitStunMs;
       const brokenNow = data.damage >= PART_MAX[part];
       createEffect(brokenNow ? "💥" : "•", target.x + visualPartOffset(target, part, attacker), yForPart(target, part));
       if (brokenNow) {
         data.broken = true;
+        SongenAudio.play("break");
         if (ownerId === "player" && target.id === "cpu") {
           state.stats.enemyPartsBroken += 1;
           if (part === "head") state.stats.enemyHeadBroken += 1;
@@ -2700,7 +2726,8 @@ hitWidth: 46,
     function renderHud(elapsed) {
       const remain = Math.max(0, Math.ceil(GAME.durationSec - elapsed));
       dom.timeValue.textContent = String(remain);
-      dom.scoreValue.textContent = `${state.stats.score}点`;
+      if (state.running && remain > 0 && remain <= 10 && remain !== lastWarningSecond) { lastWarningSecond=remain; SongenAudio.play("warning"); }
+      dom.scoreValue.textContent = t("m087", {p0: state.stats.score});
       dom.staminaValue.textContent = state.player.stamina.toFixed(1);
       const full = Math.floor(state.player.stamina);
       const half = state.player.stamina % 1 >= 0.5 ? "▣" : "";
@@ -2756,6 +2783,7 @@ hitWidth: 46,
       state.stats.score = score;
       const result = {
         outcome,
+        receipt: SongenParticipation.finish(activePlay, score, GAME.version),
         score,
         attacks: state.stats.attacks,
         guardSuccess: state.stats.guardSuccess,
@@ -2768,6 +2796,7 @@ hitWidth: 46,
         enemyHeadBroken: state.stats.enemyHeadBroken,
         playerHeadBroken: state.stats.playerHeadBroken
       };
+      SongenAudio.play(result.outcome === "win" ? "win" : "loss");
       lastResult = result;
       setBattleControlsEnabled(false);
       populateResult(result);
@@ -2803,9 +2832,9 @@ hitWidth: 46,
     }
     function renderOutcome(result) {
       const info = RESULT_TEXT[result.outcome] || RESULT_TEXT.draw;
-      dom.outcomeStatus.textContent = info.label;
+      dom.outcomeStatus.textContent = t(info.label);
       dom.outcomeMessage.textContent = makeOutcomePhrase(result.outcome, result.cpuName, result.playerName);
-      dom.outcomeScore.textContent = `スコア：${result.score}点`;
+      dom.outcomeScore.textContent = t("m088", {p0: result.score});
 
       renderOutcomeFighter(state.player, dom.outcomeFighters.player, dom.outcomeCards.player);
       renderOutcomeFighter(state.cpu, dom.outcomeFighters.cpu, dom.outcomeCards.cpu);
@@ -2824,7 +2853,7 @@ hitWidth: 46,
 
     function showOutcomeAfterFinish(result) {
       renderOutcome(result);
-      dom.countdown.textContent = "終了";
+      dom.countdown.textContent = t("m035");
       dom.countdown.classList.add("active");
       setTimeout(() => {
         dom.countdown.classList.remove("active");
@@ -2834,17 +2863,16 @@ hitWidth: 46,
 
     function populateResult(result) {
       const info = RESULT_TEXT[result.outcome] || RESULT_TEXT.draw;
-      dom.resultMain.textContent = info.label;
+      dom.resultMain.textContent = t(info.label);
       dom.resultSub.textContent = makeOutcomePhrase(result.outcome, result.cpuName, result.playerName);
-      dom.scoreBig.textContent = `${result.score}点`;
+      dom.scoreBig.textContent = t("m087", {p0: result.score});
       dom.bdAttacks.textContent = String(result.attacks);
       dom.bdGuards.textContent = String(result.guardSuccess);
       dom.bdEnemyBroken.textContent = String(result.enemyPartsBroken);
       dom.bdPlayerBroken.textContent = String(result.playerPartsBroken);
-      dom.bdElapsed.textContent = `${result.elapsedSec}秒`;
+      dom.bdElapsed.textContent = t("m089", {p0: result.elapsedSec});
       if (dom.resultShareText) dom.resultShareText.value = makeShareText(result);
-      dom.sendStatus.textContent = "ランキング送信中...";
-      dom.sendStatus.className = "send-status";
+      // Submission status is owned by the receipt lifecycle, not result repaint.
     }
 
     function renderResultRankingMessage(message) {
@@ -2853,9 +2881,9 @@ hitWidth: 46,
 
     function renderResultRanking(rows) {
       if (!dom.resultRankingContent) return;
-      const list = Array.isArray(rows) ? rows.slice(0, 10) : [];
+      const list = Array.isArray(rows) ? rows.slice(0, 30) : [];
       if (!list.length) {
-        renderResultRankingMessage("ランキングはまだありません");
+        renderResultRankingMessage(t("m090"));
         return;
       }
       const ordered = document.createElement("ol");
@@ -2864,10 +2892,12 @@ hitWidth: 46,
         const item = document.createElement("li");
         const name = document.createElement("span");
         name.className = "result-ranking-name";
-        name.textContent = row.display_name || row.player_name || row.name || "名無し";
+        name.textContent = row.display_name || row.player_name || row.name || t("m091");
         const score = document.createElement("strong");
-        score.textContent = `${Math.trunc(Number(row.score ?? row.best_score ?? 0))}点`;
-        item.value = Number(row.rank_no ?? row.rank ?? index + 1);
+        score.textContent = t("m087", {p0: Math.trunc(Number(row.score ?? row.best_score ?? 0))});
+        const serverRank = Number(row.rank_no ?? row.rank);
+        if (Number.isSafeInteger(serverRank) && serverRank > 0) item.value = serverRank;
+        else item.style.listStyleType = "none";
         item.append(name, score);
         ordered.appendChild(item);
       });
@@ -2885,42 +2915,68 @@ hitWidth: 46,
           apikey: key,
           Authorization: `Bearer ${key}`
         },
-        body: JSON.stringify({ p_game_slug: GAME.slug, p_limit: 10 })
+        body: JSON.stringify({ p_game_slug: GAME.slug, p_limit: 30 })
       });
       const text = await response.text().catch(() => "");
       if (!response.ok) throw new Error(sanitizeSubmitError(text || `HTTP ${response.status}`));
       const parsed = safeParseJson(text);
-      return Array.isArray(parsed) ? parsed.slice(0, 10) : [];
+      return Array.isArray(parsed) ? parsed.slice(0, 30) : [];
     }
 
     
 
-    async function sendScoreAfterResult(result) {
-      if (result && result.battleMode === BATTLE_MODE.local2p) {
-        dom.sendStatus.textContent = "ローカル2人対戦のため、ランキング送信は行いません";
-        dom.sendStatus.className = "send-status";
-      } else if (!supabaseConfigured()) {
-        dom.sendStatus.textContent = "ランキング連携：Publishable key設定後に有効になります";
-        dom.sendStatus.className = "send-status";
-      } else {
-        try {
-          await submitScore(result.playerName, result.score);
-          dom.sendStatus.textContent = "ランキング登録しました";
-          dom.sendStatus.className = "send-status ok";
-        } catch (error) {
-          const message = error && error.message ? String(error.message).slice(0, 90) : "詳細不明";
-          dom.sendStatus.textContent = "ランキング登録に失敗しました：" + message;
-          dom.sendStatus.className = "send-status ng";
-          console.warn("score submit failed", error);
-        }
-      }
-
+    async function loadResultRanking(result = lastResult) {
+      const request = ++rankingRequest;
+      renderResultRankingMessage(t("m050"));
       try {
-        renderResultRanking(await fetchResultRanking());
-      } catch (error) {
-        renderResultRankingMessage("ランキングを読み込めませんでした");
-        console.warn("ranking fetch failed", error);
+        const rows = await fetchResultRanking();
+        if (request === rankingRequest && result === lastResult) renderResultRanking(rows);
+      } catch (_) {
+        if (request === rankingRequest && result === lastResult) renderResultRankingMessage(t("m092"));
       }
+    }
+
+    function scoreStorage() { try { return localStorage; } catch (_) { return null; } }
+
+    function updateSubmissionRetry() {
+      const records = SongenParticipation.read(scoreStorage());
+      $("submissionRetryBtn").hidden = !Object.values(records).some(r => r.status !== 'sent');
+    }
+
+    async function sendReceipt(receipt) {
+      if (!SongenParticipation.valid(receipt) || submissionsInFlight.has(receipt.id)) return;
+      const stored = SongenParticipation.read(scoreStorage())[receipt.id];
+      if (stored?.status === 'sent') return;
+      submissionsInFlight.add(receipt.id);
+      // Persist before transmission. If storage fails, retain the result, but do not risk a
+      // request whose UUID cannot be recovered after reload.
+      if (!SongenParticipation.save(scoreStorage(), receipt)) {
+        submissionsInFlight.delete(receipt.id);
+        if (lastResult?.receipt.id === receipt.id) dom.sendStatus.textContent = t("m093");
+        return;
+      }
+      try {
+        await submitScore(receipt);
+        SongenParticipation.save(scoreStorage(), {...receipt, status:'sent'});
+        if (lastResult?.receipt.id === receipt.id) dom.sendStatus.textContent = t("m094");
+      } catch (_) {
+        SongenParticipation.save(scoreStorage(), {...receipt, status:'failed'});
+        if (lastResult?.receipt.id === receipt.id) dom.sendStatus.textContent = t("m095");
+      } finally { submissionsInFlight.delete(receipt.id); updateSubmissionRetry(); }
+    }
+
+    async function sendScoreAfterResult(result) {
+      if (!result.receipt.eligible) {
+        dom.sendStatus.textContent = result.battleMode === BATTLE_MODE.local2p
+          ? t("m096") : t("m097");
+        await loadResultRanking(result);
+        return;
+      }
+      dom.sendStatus.textContent = t("m048");
+      void loadResultRanking(result);
+      await sendReceipt(result.receipt);
+      // The post-submit refresh must not wait for an older stalled ranking response.
+      if (result === lastResult) await loadResultRanking(result);
     }
 function getSupabasePublishableKey() {
       return String(SUPABASE_PUBLISHABLE_KEY || "").trim();
@@ -2936,12 +2992,12 @@ function getSupabasePublishableKey() {
         && !SUPABASE_URL.includes("YOUR_PROJECT_ID");
     }
 
-    async function submitScore(displayName, score) {
+    async function submitScore(receipt) {
       if (!supabaseConfigured()) {
         throw new Error("Supabase is not configured");
       }
 
-      const endpoint = `${SUPABASE_URL.replace(/\/$/, "")}/rest/v1/rpc/submit_score`;
+      const endpoint = `${SUPABASE_URL.replace(/\/$/, "")}/rest/v1/rpc/submit_score_once_shared_v1`;
       const key = getSupabasePublishableKey();
       const headers = {
         "Content-Type": "application/json",
@@ -2949,10 +3005,11 @@ function getSupabasePublishableKey() {
         "Authorization": `Bearer ${key}`
       };
       const body = {
-        p_display_name: displayName,
+        p_submission_id: receipt.id,
+        p_display_name: receipt.name,
         p_game_slug: GAME.slug,
-        p_score: Math.trunc(score),
-        p_client_version: GAME.version
+        p_score: receipt.score,
+        p_client_version: receipt.version
       };
 
       const response = await fetch(endpoint, { method: "POST", headers, body: JSON.stringify(body) });
@@ -2960,7 +3017,15 @@ function getSupabasePublishableKey() {
       if (!response.ok) {
         throw new Error(sanitizeSubmitError(text || `HTTP ${response.status}`));
       }
-      return safeParseJson(text);
+      const rows = safeParseJson(text);
+      if (!Array.isArray(rows) || rows.length !== 1) throw new Error('Invalid score receipt response');
+      const row = rows[0];
+      if (!row || row.accepted !== true || typeof row.result_normalized_name !== 'string' || !row.result_normalized_name
+        || typeof row.result_display_name !== 'string' || !row.result_display_name
+        || !['result_first_score','result_best_score','result_play_count'].every(k => Number.isSafeInteger(row[k]))
+        || row.result_play_count < 1 || !['is_first_play','is_new_best','was_duplicate'].every(k => typeof row[k] === 'boolean')
+        || (row.submission_id !== undefined && row.submission_id !== receipt.id)) throw new Error('Score was not confirmed');
+      return row;
     }
 
     function safeParseJson(text) {
@@ -3233,6 +3298,7 @@ function getSupabasePublishableKey() {
       };
 
       window.addEventListener("keydown", (event) => {
+        if (event.isComposing || event.keyCode === 229 || event.target?.closest?.("input,textarea,select,[contenteditable]")) return;
         const item = map[String(event.key || "").toLowerCase()];
         if (!item || state.battleMode !== BATTLE_MODE.local2p || !state.running || state.ended) return;
         event.preventDefault();
@@ -3241,6 +3307,7 @@ function getSupabasePublishableKey() {
       });
 
       window.addEventListener("keyup", (event) => {
+        if (event.isComposing || event.keyCode === 229 || event.target?.closest?.("input,textarea,select,[contenteditable]")) return;
         const item = map[String(event.key || "").toLowerCase()];
         if (!item || !item.hold) return;
         event.preventDefault();
@@ -3286,7 +3353,7 @@ function getSupabasePublishableKey() {
           } catch (error) {
             // ゲーム本体は止めない。
           }
-          showToast("ゲーム中は戻る操作を無効にしています");
+          showToast(t("m098"));
         }
       });
 
@@ -3360,7 +3427,7 @@ function getSupabasePublishableKey() {
         if (settings) setupBattle(settings);
       });
       bindTapButton(dom.buttons.retire, retireBattle);
-      bindTapButton(dom.buttons.homeShare, () => shareText(`${GAME.title}　で遊ぼう！\n${GAME.url}`));
+      bindTapButton(dom.buttons.homeShare, () => shareText(t("m121", {p0: GAME.title, p1: GAME.url})));
       bindTapButton(dom.buttons.homeLab, () => { location.href = GAME.labUrl; });
       bindTapButton(dom.buttons.outcomeResult, () => {
         if (lastResult) showScreen("result");
@@ -3388,18 +3455,16 @@ function getSupabasePublishableKey() {
     function showSetup(mode) {
       state.battleMode = mode || state.battleMode || BATTLE_MODE.cpu;
       updateSetupModeUi();
-      let saved = "";
-      try { saved = localStorage.getItem("songen_player_name") || ""; } catch (error) {}
-      if (!dom.playerNameInput.value) dom.playerNameInput.value = saved;
+      // Home input is authoritative, including a deliberate empty value.
       showScreen("setup");
     }
 
     function updateSetupModeUi() {
       const local = state.battleMode === BATTLE_MODE.local2p;
-      if (dom.setupModeTitle) dom.setupModeTitle.textContent = local ? "ローカル2人対戦の設定" : "CPU戦の設定";
-      if (dom.opponentHeadTitle) dom.opponentHeadTitle.textContent = local ? "P2頭選択" : "CPU頭選択";
-      if (dom.opponentNameTitle) dom.opponentNameTitle.textContent = local ? "P2名" : "CPU名";
-      if (dom.cpuNameInput) dom.cpuNameInput.placeholder = local ? "空欄ならP2" : "空欄ならランダム";
+      if (dom.setupModeTitle) dom.setupModeTitle.textContent = local ? t("m100") : t("m101");
+      if (dom.opponentHeadTitle) dom.opponentHeadTitle.textContent = local ? t("m102") : t("m024");
+      if (dom.opponentNameTitle) dom.opponentNameTitle.textContent = local ? t("m103") : t("m025");
+      if (dom.cpuNameInput) dom.cpuNameInput.placeholder = local ? t("m104") : t("m062");
     }
 
     const mockSignalingAdapter = {
@@ -3411,13 +3476,13 @@ function getSupabasePublishableKey() {
       async enterWithSharedPass(sharedPass, playerInfo) {
         const pass = String(sharedPass || "").trim();
         if (!pass) {
-          const error = new Error("共通パスを入力してください");
+          const error = new Error(t("m057"));
           error.code = "NO_PASS";
           throw error;
         }
         const slot = this.slots.find((item) => item.players.length < ONLINE_LIMITS.playersPerSlot);
         if (!slot) {
-          const error = new Error("ただいまオンライン対戦の枠が満員です。少ししてからもう一度お試しください。");
+          const error = new Error(t("m105"));
           error.code = "FULL";
           throw error;
         }
@@ -3460,7 +3525,7 @@ function getSupabasePublishableKey() {
     function showOnlineLobby() {
       renderOnlineSlots();
       if (dom.onlineStatus) {
-        dom.onlineStatus.textContent = "共通パスを入力してください";
+        dom.onlineStatus.textContent = t("m057");
         dom.onlineStatus.className = "send-status";
       }
       showScreen("onlineLobby");
@@ -3473,7 +3538,7 @@ function getSupabasePublishableKey() {
       slots.forEach((slot) => {
         const row = document.createElement("div");
         row.className = "break-row";
-        const statusText = slot.status === "empty" ? "空き" : slot.status === "waiting" ? "待機中" : slot.status === "full" ? "満員" : slot.status;
+        const statusText = slot.status === "empty" ? t("m106") : slot.status === "waiting" ? t("m107") : slot.status === "full" ? t("m108") : slot.status;
         row.innerHTML = `<span>slot_${slot.slotId}</span><strong>${statusText} ${slot.players.length}/${ONLINE_LIMITS.playersPerSlot}</strong>`;
         dom.onlineSlotList.appendChild(row);
       });
@@ -3482,14 +3547,14 @@ function getSupabasePublishableKey() {
     async function joinOnlineMockSlot() {
       const pass = dom.onlinePassInput ? dom.onlinePassInput.value : "";
       if (!String(pass || "").trim()) {
-        dom.onlineStatus.textContent = "共通パスを入力してください";
+        dom.onlineStatus.textContent = t("m057");
         dom.onlineStatus.className = "send-status ng";
         return;
       }
       const playerName = sanitizeName(dom.playerNameInput && dom.playerNameInput.value, "", 12);
       if (!playerName) {
-        if (dom.playerNameError) dom.playerNameError.textContent = "プレイヤー名を入力してください。";
-        showScreen("setup");
+        if (dom.playerNameError) dom.playerNameError.textContent = t("m109");
+        showScreen("home");
         dom.playerNameInput.focus();
         return;
       }
@@ -3500,10 +3565,10 @@ function getSupabasePublishableKey() {
       try {
         const slot = await signalingAdapter.enterWithSharedPass(pass, playerInfo);
         state.onlineSession = { slotId: slot.slotId, playerId: playerInfo.playerId };
-        dom.onlineStatus.textContent = `slot_${slot.slotId} に参加しました（${slot.players.length}/${ONLINE_LIMITS.playersPerSlot}）`;
+        dom.onlineStatus.textContent = t("m110", {p0: slot.slotId, p1: slot.players.length, p2: ONLINE_LIMITS.playersPerSlot});
         dom.onlineStatus.className = "send-status ok";
       } catch (error) {
-        dom.onlineStatus.textContent = error && error.message ? error.message : "参加できませんでした";
+        dom.onlineStatus.textContent = error && error.message ? error.message : t("m111");
         dom.onlineStatus.className = "send-status ng";
       }
       renderOnlineSlots();
@@ -3547,8 +3612,31 @@ function getSupabasePublishableKey() {
       }, { passive: false });
     }
     function init() {
+      const labels = ['日本語','English','Español','Português (Brasil)','简体中文','Français','Deutsch','한국어','Русский','Italiano','繁體中文','Bahasa Indonesia','Türkçe','Tiếng Việt','ไทย'];
+      SongenI18n.options.forEach((code,i)=>{const option=document.createElement('option');option.value=code;option.textContent=labels[i];$('languageSelect').append(option)});
+      $('languageSelect').value=SongenI18n.language;
+      $('languageSelect').addEventListener('change',e=>SongenI18n.set(e.target.value));
+      const renderSound=()=>{$('soundToggle').textContent=t('m115')+': '+t(SongenAudio.enabled?'m117':'m118');$('soundToggle').setAttribute('aria-pressed',String(SongenAudio.enabled))};
+      $('soundVolume').value=SongenAudio.volume;
+      $('soundToggle').addEventListener('click',()=>{SongenAudio.setEnabled(!SongenAudio.enabled);renderSound()});
+      $('soundVolume').addEventListener('input',e=>SongenAudio.setVolume(e.target.value));
+      $('copyShareBtn').addEventListener('click',async()=>{try{await navigator.clipboard.writeText($('shareFallbackText').value);showToast(t('m083'))}catch(_){$('shareFallbackText').focus();$('shareFallbackText').select();showToast(t('m084'))}});
+      $('closeShareBtn').addEventListener('click',()=>{$('shareFallback').hidden=true});
+      document.addEventListener('pointerdown',e=>{if(!e.target.closest('#soundToggle,#soundVolume'))SongenAudio.unlock()});
+      document.addEventListener('keydown',e=>{if(!e.isComposing&&!e.target.closest('input,textarea,select'))SongenAudio.unlock()});
+      document.addEventListener('songenlanguagechange',()=>{renderSound();updateSetupModeUi();if(lastResult){populateResult(lastResult);renderOutcome(lastResult)}renderOnlineSlots()});
+      SongenI18n.apply();renderSound();
       initHeadGrid(dom.playerHeadGrid, "player");
       initHeadGrid(dom.cpuHeadGrid, "cpu");
+      dom.playerNameInput.addEventListener('input', () => { try { localStorage.setItem('songen_player_name', dom.playerNameInput.value); } catch (_) {} });
+      dom.playerNameInput.addEventListener('compositionstart', () => { composingName = true; });
+      dom.playerNameInput.addEventListener('compositionend', () => { composingName = false; });
+      $('rankingRetryBtn').addEventListener('click', () => loadResultRanking());
+      $('submissionRetryBtn').addEventListener('click', async () => {
+        for (const receipt of Object.values(SongenParticipation.read(scoreStorage()))) if (receipt.status !== 'sent') await sendReceipt(receipt);
+        if (lastResult) await loadResultRanking();
+      });
+      updateSubmissionRetry();
       bindControls();
       bindNavigation();
       bindSetupChoices();
@@ -3571,3 +3659,4 @@ function getSupabasePublishableKey() {
   </script>
 </body>
 </html>
+
