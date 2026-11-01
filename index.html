@@ -2920,7 +2920,8 @@ hitWidth: 46,
       const text = await response.text().catch(() => "");
       if (!response.ok) throw new Error(sanitizeSubmitError(text || `HTTP ${response.status}`));
       const parsed = safeParseJson(text);
-      return Array.isArray(parsed) ? parsed.slice(0, 30) : [];
+      if (!Array.isArray(parsed)) throw new Error("Invalid ranking response");
+      return parsed.slice(0, 30);
     }
 
     
