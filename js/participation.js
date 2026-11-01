@@ -15,6 +15,7 @@
     && typeof x.name === 'string' && cleanName(x.name) === x.name && !!x.name && x.eligible === true
     && x.mode === 'cpu' && Number.isFinite(x.score) && Number.isInteger(x.score)
     && typeof x.version === 'string' && ['pending','sent','failed'].includes(x.status); }
+  function samePayload(a,b) { return valid(a) && valid(b) && ['id','name','eligible','mode','score','version'].every(k => a[k] === b[k]); }
   function read(storage) {
     try { const records = JSON.parse(storage.getItem(KEY) || '{}');
       if (!records || Array.isArray(records) || typeof records !== 'object') return {};
@@ -27,9 +28,12 @@
       const raw=storage.getItem(KEY); const prior=raw ? JSON.parse(raw) : {};
       // Preserve malformed entries instead of destructively dropping unknown prior data.
       if (!prior || Array.isArray(prior) || typeof prior !== 'object') return false;
-      storage.setItem(KEY, JSON.stringify({...prior, [receipt.id]:receipt})); return true;
+      const existing=prior[receipt.id];
+      if (Object.prototype.hasOwnProperty.call(prior,receipt.id) && !samePayload(existing,receipt)) return false;
+      const next=existing?.status==='sent' ? {...receipt,status:'sent'} : receipt;
+      storage.setItem(KEY, JSON.stringify({...prior, [receipt.id]:next})); return true;
     } catch (_) { return false; }
   }
-  const api = {KEY,cleanName,begin,finish,valid,read,save};
+  const api = {KEY,cleanName,begin,finish,valid,samePayload,read,save};
   if (typeof module !== 'undefined') module.exports=api; else root.SongenParticipation=api;
 })(typeof globalThis !== 'undefined' ? globalThis : window);

@@ -2946,6 +2946,10 @@ hitWidth: 46,
     async function sendReceipt(receipt) {
       if (!SongenParticipation.valid(receipt) || submissionsInFlight.has(receipt.id)) return;
       const stored = SongenParticipation.read(scoreStorage())[receipt.id];
+      if (stored && !SongenParticipation.samePayload(stored,receipt)) {
+        if (lastResult?.receipt.id === receipt.id) dom.sendStatus.textContent=t('m093');
+        return;
+      }
       if (stored?.status === 'sent') return;
       submissionsInFlight.add(receipt.id);
       // Persist before transmission. If storage fails, retain the result, but do not risk a
