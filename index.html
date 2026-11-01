@@ -2919,9 +2919,20 @@ hitWidth: 46,
       });
       const text = await response.text().catch(() => "");
       if (!response.ok) throw new Error(sanitizeSubmitError(text || `HTTP ${response.status}`));
+      if (text.length > 1024 * 1024) throw new Error("Ranking response exceeds expected size");
       const parsed = safeParseJson(text);
-      if (!Array.isArray(parsed)) throw new Error("Invalid ranking response");
-      return parsed.slice(0, 30);
+      if (!Array.isArray(parsed) || parsed.length > 30 || !parsed.every(row => {
+        if (!row || typeof row !== 'object' || Array.isArray(row)) return false;
+        const name = row.display_name ?? row.player_name ?? row.name;
+        const score = row.score ?? row.best_score;
+        const rank = row.rank_no ?? row.rank;
+        return typeof name === 'string' && name.trim().length > 0
+          && (typeof score === 'number' || (typeof score === 'string' && score.trim() !== ''))
+          && Number.isSafeInteger(Number(score))
+          && (typeof rank === 'number' || (typeof rank === 'string' && rank.trim() !== ''))
+          && Number.isSafeInteger(Number(rank)) && Number(rank) > 0;
+      })) throw new Error("Invalid ranking response");
+      return parsed;
     }
 
     
@@ -2945,7 +2956,11 @@ hitWidth: 46,
     }
 
     async function sendReceipt(receipt) {
-      if (!SongenParticipation.valid(receipt) || submissionsInFlight.has(receipt.id)) return;
+      if (!SongenParticipation.valid(receipt)) {
+        if (lastResult?.receipt === receipt) dom.sendStatus.textContent=t("m093");
+        return;
+      }
+      if (submissionsInFlight.has(receipt.id)) return;
       const stored = SongenParticipation.read(scoreStorage())[receipt.id];
       if (stored && !SongenParticipation.samePayload(stored,receipt)) {
         if (lastResult?.receipt.id === receipt.id) dom.sendStatus.textContent=t('m093');

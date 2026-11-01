@@ -22,3 +22,4 @@ test('storage denial and malformed records do not break play or discard unknown 
  assert.deepEqual(JSON.parse(s.data[p.KEY]).unknown,{old:true});assert.equal(Object.keys(p.read(s)).length,1);
 });
 test('same UUID cannot replace an existing different or corrupt payload',()=>{const s=storage();const a=p.finish(p.begin('甲','cpu',()=>id),7,'v');assert.equal(p.save(s,{...a,status:'sent'}),true);const bytes=s.data[p.KEY];assert.equal(p.save(s,{...a,name:'乙',score:8}),false);assert.equal(s.data[p.KEY],bytes);s.data[p.KEY]=JSON.stringify({[id]:{unknown:'preserve'}});const corrupt=s.data[p.KEY];assert.equal(p.save(s,a),false);assert.equal(s.data[p.KEY],corrupt)});
+test('UUID capability failure does not block game start and cannot create a sendable receipt',()=>{const play=p.begin('名','cpu',()=>{throw Error('unavailable')});assert.equal(play.id,null);assert.equal(p.valid(p.finish(play,0,'v')),false)});

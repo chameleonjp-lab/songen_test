@@ -5,7 +5,8 @@
   function cleanName(value) { return String(value || '').replace(/[\r\n\t]/g, ' ').trim().slice(0, 12); }
   function begin(name, mode, uuid) {
     const displayName = cleanName(name);
-    return Object.freeze({ id: uuid(), name: displayName, eligible: mode === 'cpu' && !!displayName, mode });
+    let id = null; try { id = uuid(); } catch (_) {}
+    return Object.freeze({ id, name: displayName, eligible: mode === 'cpu' && !!displayName, mode });
   }
   function finish(play, score, version) {
     return Object.freeze({ id: play.id, name: play.name, eligible: play.eligible, mode: play.mode,
