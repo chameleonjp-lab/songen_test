@@ -32,7 +32,8 @@
       const existing=prior[receipt.id];
       if (Object.prototype.hasOwnProperty.call(prior,receipt.id) && !samePayload(existing,receipt)) return false;
       const next=existing?.status==='sent' ? {...receipt,status:'sent'} : receipt;
-      storage.setItem(KEY, JSON.stringify({...prior, [receipt.id]:next})); return true;
+      const serialized=JSON.stringify({...prior, [receipt.id]:next});
+      storage.setItem(KEY, serialized); return storage.getItem(KEY)===serialized;
     } catch (_) { return false; }
   }
   const api = {KEY,cleanName,begin,finish,valid,samePayload,read,save};

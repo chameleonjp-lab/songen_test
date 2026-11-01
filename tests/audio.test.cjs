@@ -14,3 +14,6 @@ test('oscillator cleanup errors never skip gain cleanup; start/stop errors relea
  assert.equal(created,10,failure+' must not leak six-voice budget');assert.ok(oscDisconnected>=10,failure);if(failure!=='gain-create')assert.equal(gainsDisconnected,10,failure+' must disconnect gain independently');
  }
 });
+
+test('independent: interrupted before notification clears voice budget before resume',()=>{const x=setup();x.api.unlock();for(const k of ['select','start','attack','guard','hit','break'])x.api.play(k);assert.equal(x.voices(),6);x.ctx().state='interrupted';x.api.unlock();x.api.play('win');assert.equal(x.voices(),7)});
+test('independent: closed audio context is replaced on enabled gesture',()=>{const x=setup();x.api.unlock();const old=x.ctx();old.state='closed';x.api.unlock();assert.notEqual(x.ctx(),old)});

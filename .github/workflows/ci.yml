@@ -18,6 +18,10 @@ jobs:
       - run: npm ci --ignore-scripts --no-audit --no-fund
       - run: npm run check
       - run: npm test
+      - run: npm install --no-save --package-lock=false --ignore-scripts playwright@1.62.1
+      - run: npx --no-install playwright install --with-deps chromium webkit
+      - run: node tools/browser-common.mjs
+      - run: BROWSER=webkit node tools/browser-common.mjs
       - run: npm run build
       - uses: actions/upload-pages-artifact@v3
         if: github.event_name == 'push' && github.ref == 'refs/heads/main'

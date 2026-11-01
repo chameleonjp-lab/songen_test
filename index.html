@@ -1517,6 +1517,8 @@ hitWidth: 46,
     let composingName = false;
     let rankingRequest = 0;
     const submissionsInFlight = new Set();
+    const unsavedReceipts = new Map();
+    const acknowledgedReceipts = new Set();
     let lastResult = null;
     let toastTimer = null;
 
@@ -2950,8 +2952,12 @@ hitWidth: 46,
 
     function scoreStorage() { try { return localStorage; } catch (_) { return null; } }
 
+    function pendingReceipts() {
+      return {...SongenParticipation.read(scoreStorage()), ...Object.fromEntries(unsavedReceipts)};
+    }
+
     function updateSubmissionRetry() {
-      const records = SongenParticipation.read(scoreStorage());
+      const records = pendingReceipts();
       $("submissionRetryBtn").hidden = !Object.values(records).some(r => r.status !== 'sent');
     }
 
@@ -2961,27 +2967,35 @@ hitWidth: 46,
         return;
       }
       if (submissionsInFlight.has(receipt.id)) return;
+      if (unsavedReceipts.has(receipt.id) && !SongenParticipation.samePayload(unsavedReceipts.get(receipt.id),receipt)) return;
       const stored = SongenParticipation.read(scoreStorage())[receipt.id];
       if (stored && !SongenParticipation.samePayload(stored,receipt)) {
-        if (lastResult?.receipt.id === receipt.id) dom.sendStatus.textContent=t('m093');
+        if (SongenParticipation.samePayload(lastResult?.receipt,receipt)) dom.sendStatus.textContent=t('m093');
         return;
       }
-      if (stored?.status === 'sent') return;
+      unsavedReceipts.set(receipt.id,receipt);
+      updateSubmissionRetry();
+      if (stored?.status === 'sent') { unsavedReceipts.delete(receipt.id); updateSubmissionRetry(); return; }
       submissionsInFlight.add(receipt.id);
       // Persist before transmission. If storage fails, retain the result, but do not risk a
       // request whose UUID cannot be recovered after reload.
       if (!SongenParticipation.save(scoreStorage(), receipt)) {
         submissionsInFlight.delete(receipt.id);
-        if (lastResult?.receipt.id === receipt.id) dom.sendStatus.textContent = t("m093");
+        if (SongenParticipation.samePayload(lastResult?.receipt,receipt)) dom.sendStatus.textContent = t("m093");
         return;
       }
       try {
-        await submitScore(receipt);
-        SongenParticipation.save(scoreStorage(), {...receipt, status:'sent'});
-        if (lastResult?.receipt.id === receipt.id) dom.sendStatus.textContent = t("m094");
+        if (!acknowledgedReceipts.has(receipt.id)) {
+          await submitScore(receipt);
+          acknowledgedReceipts.add(receipt.id);
+        }
+        if (!SongenParticipation.save(scoreStorage(), {...receipt, status:'sent'})) throw new Error('Receipt acknowledgement was not saved');
+        unsavedReceipts.delete(receipt.id);
+        acknowledgedReceipts.delete(receipt.id);
+        if (SongenParticipation.samePayload(lastResult?.receipt,receipt)) dom.sendStatus.textContent = t("m094");
       } catch (_) {
-        SongenParticipation.save(scoreStorage(), {...receipt, status:'failed'});
-        if (lastResult?.receipt.id === receipt.id) dom.sendStatus.textContent = t("m095");
+        if (!acknowledgedReceipts.has(receipt.id)) SongenParticipation.save(scoreStorage(), {...receipt, status:'failed'});
+        if (SongenParticipation.samePayload(lastResult?.receipt,receipt)) dom.sendStatus.textContent = t(acknowledgedReceipts.has(receipt.id) ? 'm093' : 'm095');
       } finally { submissionsInFlight.delete(receipt.id); updateSubmissionRetry(); }
     }
 
@@ -3041,7 +3055,7 @@ function getSupabasePublishableKey() {
       if (!Array.isArray(rows) || rows.length !== 1) throw new Error('Invalid score receipt response');
       const row = rows[0];
       if (!row || row.accepted !== true || typeof row.result_normalized_name !== 'string' || !row.result_normalized_name
-        || typeof row.result_display_name !== 'string' || !row.result_display_name
+        || typeof row.result_display_name !== 'string' || row.result_display_name !== receipt.name || row.result_normalized_name !== receipt.name
         || !['result_first_score','result_best_score','result_play_count'].every(k => Number.isSafeInteger(row[k]))
         || row.result_play_count < 1 || !['is_first_play','is_new_best','was_duplicate'].every(k => typeof row[k] === 'boolean')
         || (row.submission_id !== undefined && row.submission_id !== receipt.id)) throw new Error('Score was not confirmed');
@@ -3653,7 +3667,7 @@ function getSupabasePublishableKey() {
       dom.playerNameInput.addEventListener('compositionend', () => { composingName = false; });
       $('rankingRetryBtn').addEventListener('click', () => loadResultRanking());
       $('submissionRetryBtn').addEventListener('click', async () => {
-        for (const receipt of Object.values(SongenParticipation.read(scoreStorage()))) if (receipt.status !== 'sent') await sendReceipt(receipt);
+        for (const receipt of Object.values(pendingReceipts())) if (receipt.status !== 'sent') await sendReceipt(receipt);
         if (lastResult) await loadResultRanking();
       });
       updateSubmissionRetry();
