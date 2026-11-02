@@ -2,6 +2,8 @@ name: Validate
 on:
   pull_request:
   workflow_call:
+  push:
+    branches: [codex-share-thumbnail-20261102]
 permissions:
   contents: read
 concurrency:
@@ -22,6 +24,14 @@ jobs:
       - run: npx --no-install playwright install --with-deps chromium webkit
       - run: node tools/browser-common.mjs
       - run: BROWSER=webkit node tools/browser-common.mjs
+      - run: node tools/share-capture.mjs
+      - name: Preserve anonymous actual-game material
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: songen-share-capture
+          path: test-results/share-capture/
+          if-no-files-found: ignore
       - run: npm run build
       - uses: actions/upload-pages-artifact@v3
         if: github.event_name == 'push' && github.ref == 'refs/heads/main'

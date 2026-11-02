@@ -12,11 +12,13 @@ await new Promise(r=>server.listen(0,'127.0.0.1',r));
 const origin=`http://127.0.0.1:${server.address().port}`;
 const engine=process.env.BROWSER==='webkit'?webkit:chromium;
 const browser=await engine.launch();
-const context=await browser.newContext({viewport:{width:402,height:874},locale:'ja-JP'});
+const context=await browser.newContext({viewport:{width:402,height:874},locale:'ja-JP',serviceWorkers:'block'});
 const cors={'access-control-allow-origin':origin,'access-control-allow-methods':'POST, OPTIONS','access-control-allow-headers':'content-type, apikey, authorization'};
+const allowed=new Set(['index.html','js/messages.js','js/i18n.js','js/audio.js','js/participation.js']);
 const calls=[],errors=[],blocked=[];let ackMode='ok',rankMode='ok';
+await context.routeWebSocket('**/*',ws=>{blocked.push('websocket');ws.close()});
 const rankRows=Array.from({length:30},(_,i)=>({display_name:i<2?'同名':`人${i}`,score:100-i,rank_no:i<2?1:i+1}));
-await context.route('**/*',async route=>{const request=route.request(),url=request.url();if(url.startsWith(origin+'/'))return route.continue();if(url.includes('/rest/v1/rpc/')){if(request.method()==='OPTIONS')return route.fulfill({status:204,headers:cors,body:''});const rpc=url.split('/').at(-1),payload=request.postDataJSON();calls.push({rpc,payload});if(rpc==='submit_score_once_shared_v1'){
+await context.route('**/*',async route=>{const request=route.request(),url=request.url();if(new URL(url).origin===origin){const relative=new URL(url).pathname==='/'?'index.html':decodeURIComponent(new URL(url).pathname.slice(1));if(!['GET','HEAD'].includes(request.method())||!allowed.has(relative)){blocked.push(url);return route.abort()}let body=await readFile(resolve(root,relative));if(relative==='index.html')body=body.toString().replace(/<\/script>\s*<\/body>/,hook+'</script></body>');return route.fulfill({status:200,contentType:relative.endsWith('.html')?'text/html':'text/javascript',body:request.method()==='HEAD'?Buffer.alloc(0):body})}if(url.includes('/rest/v1/rpc/')){if(request.method()==='OPTIONS')return route.fulfill({status:204,headers:cors,body:''});const rpc=url.split('/').at(-1),payload=request.postDataJSON();calls.push({rpc,payload});if(rpc==='submit_score_once_shared_v1'){
  if(ackMode==='lost')return route.abort();
  const row={accepted:true,result_normalized_name:payload.p_display_name,result_display_name:payload.p_display_name,result_first_score:payload.p_score,result_best_score:payload.p_score,result_play_count:1,is_first_play:true,is_new_best:true,was_duplicate:false};
  return route.fulfill({status:200,headers:cors,contentType:'application/json',body:JSON.stringify(ackMode==='malformed'?{accepted:true}:ackMode==='wrong-name'?[{...row,result_display_name:'別人'}]:[row])});
