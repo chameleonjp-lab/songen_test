@@ -1,4 +1,7 @@
 <!doctype html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8" />
 <!--
   file: songen_wo_kakeyouka_index_fixed_v20260606_38_spec_wording_cleanup.html
   based_on: v20260606_37_no_headbutt
@@ -22,9 +25,20 @@
 
 <!-- latest: songen_wo_kakeyouka_index_fixed_v20260606_40_remove_dangling_async / created 2026-06-06 -->
 <!-- songen_wo_kakeyouka_index_fixed_v20260606_07: rebuilt battle view separation, visible 3x3 parts, natural hit endpoint, improved controls -->
-<html lang="ja">
-<head>
-  <meta charset="utf-8" />
+  <meta property="og:title" content="尊厳を賭けようか">
+  <meta property="og:description" content="その心臓を、拳で狙え。頭・腕・脚が壊れる絵文字対戦ゲーム。">
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://chameleonjp.codeberg.page/songen_wo_kakeyouka/">
+  <meta property="og:image" content="https://chameleonjp-lab.github.io/songen_wo_kakeyouka/assets/social-card.png">
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="630">
+  <meta property="og:image:alt" content="尊厳を賭けようかの実ゲーム画面とタイトル。絵文字の頭・心臓・腕・脚・羽を持つ2人の対戦。">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="尊厳を賭けようか">
+  <meta name="twitter:description" content="その心臓を、拳で狙え。頭・腕・脚が壊れる絵文字対戦ゲーム。">
+  <meta name="twitter:image" content="https://chameleonjp-lab.github.io/songen_wo_kakeyouka/assets/social-card.png">
+  <meta name="twitter:image:alt" content="尊厳を賭けようかの実ゲーム画面とタイトル。絵文字の頭・心臓・腕・脚・羽を持つ2人の対戦。">
+
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover" />
   <meta name="format-detection" content="telephone=no" />
   <title data-i18n="m001">尊厳を賭けようか</title>
@@ -3435,14 +3449,10 @@ function getSupabasePublishableKey() {
         handler(event);
       };
 
+      // Activate after the standard click target is fixed. Running on touch
+      // pointerup first can expose another screen beneath its compatibility click.
+      // Native click also preserves mouse and Enter/Space button activation.
       btn.addEventListener("click", run);
-      btn.addEventListener("pointerup", (event) => {
-        if (event.pointerType === "touch") run(event);
-      });
-
-      if (!window.PointerEvent) {
-        btn.addEventListener("touchend", run, { passive: false });
-      }
     }
     function bindNavigation() {
       bindTapButton(dom.buttons.homeCpu, () => showSetup(BATTLE_MODE.cpu));
