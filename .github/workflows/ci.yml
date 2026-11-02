@@ -2,8 +2,6 @@ name: Validate
 on:
   pull_request:
   workflow_call:
-  push:
-    branches: [codex-share-thumbnail-20261102]
 permissions:
   contents: read
 concurrency:
