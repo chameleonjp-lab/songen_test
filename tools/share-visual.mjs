@@ -29,6 +29,16 @@ try{
    // Existing noopener/popup fallback remains usable; this is not an ordinary standalone share-copy UI.
    assert.equal(await page.locator('#shareFallbackText').inputValue(),expected);assert.equal(await page.locator('#copyShareBtn').isVisible(),true);await page.locator('#closeShareBtn').click();return geometry;
   }
+  if(lang==='ja'&&orientation==='portrait'){
+   // Exercise real native mouse/keyboard activation on separate pages: no prior debounce window.
+   for(const activation of ['mouse','Enter','Space']){
+    const navigationPage=await context.newPage();navigationPage.on('pageerror',e=>errors.push(e.message));await navigationPage.goto(origin);
+    const button=navigationPage.locator('#homeCpuBtn');
+    if(activation==='mouse')await button.click();else{await button.focus();await navigationPage.keyboard.press(activation)}
+    await navigationPage.locator('#setupScreen.active').waitFor();assert.equal(await navigationPage.locator('#playerNameInput').inputValue(),'');
+    assert.equal(await navigationPage.evaluate(()=>Object.keys(SongenParticipation.read(localStorage)).length),0);await navigationPage.close();
+   }
+  }
   const home=await share('home',await page.evaluate(url=>SongenI18n.t('m121',{p0:GAME.title,p1:url}),official));
   if(lang==='ja'&&orientation==='portrait'){
    // Separate guarded page: native popup is its first gesture, not a tap inside the real 250ms debounce window.

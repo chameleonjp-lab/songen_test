@@ -3449,14 +3449,10 @@ function getSupabasePublishableKey() {
         handler(event);
       };
 
+      // Activate after the standard click target is fixed. Running on touch
+      // pointerup first can expose another screen beneath its compatibility click.
+      // Native click also preserves mouse and Enter/Space button activation.
       btn.addEventListener("click", run);
-      btn.addEventListener("pointerup", (event) => {
-        if (event.pointerType === "touch") run(event);
-      });
-
-      if (!window.PointerEvent) {
-        btn.addEventListener("touchend", run, { passive: false });
-      }
     }
     function bindNavigation() {
       bindTapButton(dom.buttons.homeCpu, () => showSetup(BATTLE_MODE.cpu));
