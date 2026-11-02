@@ -25,12 +25,16 @@ jobs:
       - run: node tools/browser-common.mjs
       - run: BROWSER=webkit node tools/browser-common.mjs
       - run: node tools/share-capture.mjs
+      - run: node tools/share-visual.mjs
+      - run: BROWSER=webkit node tools/share-visual.mjs
       - name: Preserve anonymous actual-game material
         if: always()
         uses: actions/upload-artifact@v4
         with:
           name: songen-share-capture
-          path: test-results/share-capture/
+          path: |
+            test-results/share-capture/
+            test-results/share-visible/
           if-no-files-found: ignore
       - run: npm run build
       - uses: actions/upload-pages-artifact@v3
