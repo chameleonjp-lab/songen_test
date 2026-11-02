@@ -3056,8 +3056,8 @@ function getSupabasePublishableKey() {
       const row = rows[0];
       if (!row || row.accepted !== true || typeof row.result_normalized_name !== 'string' || !row.result_normalized_name
         || typeof row.result_display_name !== 'string' || row.result_display_name !== receipt.name || row.result_normalized_name !== receipt.name
-        || !['result_first_score','result_best_score','result_play_count'].every(k => Number.isSafeInteger(row[k]))
-        || row.result_play_count < 1 || !['is_first_play','is_new_best','was_duplicate'].every(k => typeof row[k] === 'boolean')
+        || !['result_first_score','result_best_score','result_play_count'].every(k => Number.isSafeInteger(row[k]) && row[k] >= -2147483648 && row[k] <= 2147483647)
+        || row.result_best_score < receipt.score || row.result_play_count < 1 || !['is_first_play','is_new_best','was_duplicate'].every(k => typeof row[k] === 'boolean')
         || (row.submission_id !== undefined && row.submission_id !== receipt.id)) throw new Error('Score was not confirmed');
       return row;
     }

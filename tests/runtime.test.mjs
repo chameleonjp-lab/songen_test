@@ -27,3 +27,12 @@ test('unsaved quota result has a visible real retry control and can recover',asy
 test('accepted ACK with failed local commit retries storage only, not the RPC',async()=>{const x=setup();const p=x.w.SongenParticipation;const receipt=p.finish(p.begin('名','cpu',()=>x.w.crypto.randomUUID()),42,'v');x.api.setLast({receipt});const proto=Object.getPrototypeOf(x.w.localStorage),original=proto.setItem;let quota=true;proto.setItem=function(k,v){if(quota&&v.includes('"status":"sent"'))throw Error('quota');return original.call(this,k,v)};await x.api.sendReceipt(receipt);quota=false;await x.api.sendReceipt(receipt);assert.equal(x.calls.filter(c=>c.url.includes('/submit_')).length,1);assert.equal(p.read(x.w.localStorage)[receipt.id].status,'sent');proto.setItem=original;await x.w.happyDOM.close()});
 
 test('independent: colliding new receipt cannot hide old pending record from real retry button',async()=>{const x=setup();const p=x.w.SongenParticipation;const id=x.w.crypto.randomUUID();const old=p.finish(p.begin('名','cpu',()=>id),42,'v');p.save(x.w.localStorage,old);const collision={...old,name:'OTHER',score:99};x.api.setLast({receipt:collision});await x.api.sendReceipt(collision);x.w.document.getElementById('submissionRetryBtn').dispatchEvent(new x.w.Event('click'));await new Promise(r=>setImmediate(r));assert.equal(x.calls.filter(c=>c.url.includes('/submit_')).length,1);assert.equal(p.read(x.w.localStorage)[id].status,'sent');await x.w.happyDOM.close()});
+
+
+test('normal ACK int4 bounds and descending best preserve pending result until valid same-payload retry',async()=>{
+ for(const patch of [{result_first_score:2147483648},{result_first_score:-2147483649},{result_best_score:2147483648},{result_best_score:-2147483649},{result_play_count:2147483648},{result_best_score:41}]){
+  const x=setup();const P=x.w.SongenParticipation;const r=P.finish(P.begin('名','cpu',()=>x.w.crypto.randomUUID()),42,'v');let invalid=true;const calls=[];
+  x.w.fetch=async(url,opts)=>{calls.push(JSON.parse(opts.body));return{ok:true,text:async()=>JSON.stringify([{...accepted,...(invalid?patch:{result_first_score:-1})}])};};
+  await x.api.sendReceipt(r);assert.equal(P.read(x.w.localStorage)[r.id].status,'failed',JSON.stringify(patch));invalid=false;await x.api.sendReceipt(P.read(x.w.localStorage)[r.id]);assert.equal(P.read(x.w.localStorage)[r.id].status,'sent');assert.deepEqual(calls[0],calls[1]);await x.w.happyDOM.close();
+ }
+});

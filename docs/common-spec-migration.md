@@ -95,3 +95,7 @@
 - Nodeの固定combat14関数ハッシュを検査し、採点・fixed tick・既存戦闘ルールは変更していません。
 - 未完の区別: 本人の参加者identity判断、normal RPCの本番適用、厳密な参加者30名集計、Pages Source設定、マージ後の公開、Codeberg/GitHub同等性、翻訳の母語品質、実音の聴取、iPhone Safari実機は、このmockブラウザ検査では確認できません。
 - PR段階で配備せず、既存公開用mainへの本人マージを待ちます。CIと全文読み戻しの最終結果はPRの追記に記録します。
+
+
+## 2026-11-02 09:51 JST acknowledgement boundary follow-up
+Baseline PR3 `9219e8f633b21daf5ef033eccaf3b6897dc05685`. The real sendReceipt/storage path accepted out-of-int4 or descending best-below-submitted responses and incorrectly stored sent. The normal RPC acknowledgement now checks PostgreSQL integer bounds and best >= this submitted result, retaining failed records and identical UUID/payload retry. Existing owner checks and signed historical/zero first scores remain. RED→GREEN, full local suite 48/48, check and build pass. Independent review/current-head Chromium-WebKit CI remain pending, separate from iPhone/identity/production acceptance. No game rules, DB or production changes.
