@@ -1,0 +1,1 @@
+{"name":"songen-common-spec-checks","version":"1.0.0","private":true,"scripts":{"test":"node --test tests/*.test.*","check":"node tools/check.mjs","build":"node tools/build.mjs"},"devDependencies":{"happy-dom":"21.0.4"},"engines":{"node":">=22"}}

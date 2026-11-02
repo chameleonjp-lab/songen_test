@@ -1,0 +1,3 @@
+const test=require('node:test');const assert=require('node:assert/strict');const fs=require('node:fs');const crypto=require('node:crypto');
+const html=fs.readFileSync(__dirname+'/../index.html','utf8');const hashes=require('./core-hashes.json');
+for(const [name,hash] of Object.entries(hashes))test('baseline core unchanged: '+name,()=>{const re=new RegExp('^    (?:async )?function '+name+'\\(','m');const m=re.exec(html);assert.ok(m);const tail=html.slice(m.index+m[0].length);const next=/^    (?:async )?function \w+\(/m.exec(tail);const code=html.slice(m.index,next?m.index+m[0].length+next.index:html.length).trim();assert.equal(crypto.createHash('sha256').update(code).digest('hex'),hash)});

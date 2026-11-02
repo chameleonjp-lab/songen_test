@@ -1,0 +1,35 @@
+name: Publish validated main
+on:
+  push:
+    branches: [main]
+permissions:
+  contents: read
+concurrency:
+  group: pages
+  cancel-in-progress: true
+jobs:
+  validate:
+    uses: ./.github/workflows/ci.yml
+  deploy:
+    needs: validate
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      pages: write
+      id-token: write
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - name: Require current main and existing workflow-based Pages source
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const {data: branch} = await github.rest.repos.getBranch({...context.repo, branch:'main'});
+            if (branch.commit.sha !== context.sha) throw new Error('A newer main commit exists. Do not publish this artifact.');
+            const {data: pages} = await github.rest.repos.getPages(context.repo);
+            if (pages.build_type !== 'workflow') throw new Error('Pages source must be set to GitHub Actions by the repository owner.');
+      - name: Deploy the checked commit artifact
+        id: deployment
+        uses: actions/deploy-pages@v4
